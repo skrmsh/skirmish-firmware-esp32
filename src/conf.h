@@ -54,9 +54,7 @@ const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
 #define VBAT_MIN 3200
 #define VBAT_MAX 4200
 
-// Internal reference voltage of the ADC. This value may be different
-// between different ESP32 modules and currently must be calibrated manually
-#define ADC_VREF 1340
+#define ADC_VREF 1400
 
 // Display
 #define DISPLAY_ROTATION 2 // -> Portrait with connector on the top side
