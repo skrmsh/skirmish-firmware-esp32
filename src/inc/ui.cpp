@@ -105,6 +105,13 @@ void SkirmishUI::update() {
     if (currentScene->update()) {
         setRenderingRequired();
     }
+
+    // Re-Render the UI every UI_REFRESH_INTERVAL milliseconds to keep
+    // things like the status overlay up to date
+    if (millis() > nextScheduledUpdate) {
+        setRenderingRequired();
+        nextScheduledUpdate = millis() + UI_REFRESH_INTERVAL;
+    }
 }
 
 /**
