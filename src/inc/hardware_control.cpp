@@ -17,6 +17,7 @@ Copyright (C) 2023 Ole Lange
 
 // Amount of bits the adc should read and return
 const uint8_t adcResolution = 12;
+uint16_t lipoCurve[100] = {3270, 3338, 3407, 3476, 3544, 3610, 3626, 3643, 3659, 3675, 3690, 3694, 3698, 3702, 3706, 3710, 3714, 3718, 3722, 3726, 3730, 3734, 3738, 3742, 3746, 3751, 3755, 3759, 3763, 3767, 3771, 3775, 3779, 3783, 3787, 3790, 3792, 3794, 3796, 3798, 3801, 3805, 3809, 3813, 3817, 3821, 3825, 3829, 3833, 3837, 3841, 3843, 3845, 3847, 3849, 3852, 3856, 3860, 3864, 3868, 3874, 3882, 3891, 3899, 3907, 3915, 3923, 3931, 3939, 3947, 3954, 3960, 3966, 3972, 3978, 3986, 3994, 4002, 4010, 4018, 4029, 4041, 4053, 4066, 4078, 4085, 4091, 4097, 4103, 4109, 4117, 4125, 4133, 4141, 4149, 4159, 4169, 4179, 4189, 4200};
 
 // Until which millis() value the vibration motor should
 // be turned on
@@ -81,7 +82,10 @@ uint16_t hardwareReadVBAT() {
 */
 float hardwareBatteryPercent() {
     uint16_t vbat = hardwareReadVBAT();
-    return (float)(vbat - VBAT_MIN) / (VBAT_MAX - VBAT_MIN);
+    for (uint8_t i = 99; i >= 0; i --) {
+        if (vbat >= lipoCurve[i]) return (i + 1) / 100.0;
+    }
+    return 0;
 }
 
 /**
