@@ -80,6 +80,25 @@ uint32_t hitpointReadShotRaw(uint8_t addr) {
 }
 
 /**
+ * Reads the last received shot data from every connected hitpoint and
+ * returns the first which is not 0x00000000
+ * 
+ * @return Raw shot data packet. If 0, no shot was received.
+*/
+uint32_t hitpointReadShotRaw() {
+    uint32_t retVal = 0;
+    
+    // Read every hitpoint, but only write the first which isn't
+    // zero to the return value. This causes that the first shot
+    // is used but every hitpoint it reset
+    for (uint8_t addr : attachedHitpoints) {
+        if (retVal == 0) retVal = hitpointReadShotRaw(addr);
+    }
+
+    return retVal;
+}
+
+/**
  * Returns the 8-Bit PlayerID from a raw shot
  * 
  * @param shot raw shot packet
@@ -171,6 +190,16 @@ void hitpointSelectAnimation(uint8_t addr, uint8_t animation) {
 }
 
 /**
+ * Select an animation on every hitpoint. Animations are
+ * defined in the const.h file.
+ * 
+ * @param animation The animation which the given hitpoint should run
+*/
+void hitpointSelectAnimation(uint8_t animation) {
+    for (uint8_t addr : attachedHitpoints) hitpointSelectAnimation(addr, animation);
+}
+
+/**
  * Select the animation speed for the specified hitpoint.
  * The speed value depends on the selected animation:
  * 
@@ -197,6 +226,21 @@ void hitpointSetAnimationSpeed(uint8_t addr, uint8_t speed) {
 }
 
 /**
+ * Select the animation speed for any hitpoint.
+ * The speed value depends on the selected animation:
+ * 
+ * - Solid: Speed does not apply
+ * - Blink: (10 * speed) milliseconds per blink
+ * - Rotate: Next pixel every (10 * speed) milliseconds
+ * - Breathe: 1% fading in the current direction every speed milliseconds
+ * 
+ * @param speed Speed to set for the animations
+ */
+void hitpointSetAnimationSpeed(uint8_t speed) {
+    for (uint8_t addr : attachedHitpoints) hitpointSetAnimationSpeed(addr, speed);
+}
+
+/**
  * Set the color for the hitpoint animation.
  * 
  * @param addr Address of the hitpoint
@@ -218,6 +262,18 @@ void hitpointSetColor(uint8_t addr, uint8_t r, uint8_t g, uint8_t b) {
     writeBuffer(5, addr);
 
     logDebug("Set Hitpoint (0x%02x) color to: #%02x%02x%02x", addr, r, g, b);
+}
+
+
+/**
+ * Set the color for the hitpoint animation on every connected hitpoint
+ * 
+ * @param r Red color value (0-255)
+ * @param g Green color value (0-255)
+ * @param b Blue color value (0-255)
+*/
+void hitpointSetColor(uint8_t r, uint8_t g, uint8_t b) {
+    for (uint8_t addr : attachedHitpoints) hitpointSetColor(addr, r, g, b);
 }
 
 /**
