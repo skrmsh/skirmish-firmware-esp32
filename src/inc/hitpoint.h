@@ -20,11 +20,14 @@ void hitpointInit();
 
 bool hitpointEventTriggered();
 uint32_t hitpointReadShotRaw(uint8_t addr);
-uint32_t hitpointReadAnyShotRaw();
+uint32_t hitpointReadShotRaw();
 
 void hitpointSelectAnimation(uint8_t addr, uint8_t animation);
+void hitpointSelectAnimation(uint8_t animation);
 void hitpointSetAnimationSpeed(uint8_t addr, uint8_t speed);
+void hitpointSetAnimationSpeed(uint8_t speed);
 void hitpointSetColor(uint8_t addr, uint8_t r, uint8_t g, uint8_t b);
+void hitpointSetColor(uint8_t r, uint8_t g, uint8_t b);
 
 uint8_t getPIDFromShot(uint32_t shot);
 uint16_t getSIDFromShot(uint32_t shot);

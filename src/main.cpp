@@ -114,7 +114,7 @@ void loop() {
         }
 
         if (hitpointEvent && !game->player.isInviolable()) {
-            lastReceivedShot = hitpointReadAnyShotRaw();
+            lastReceivedShot = hitpointReadShotRaw();
             logDebug("Received Hitpoint Data: %08x", lastReceivedShot);
 
             if (lastReceivedShot != 0) { // Shot really contains data
