@@ -21,6 +21,7 @@ Copyright (C) 2023 Ole Lange
 #include <inc/game.h>
 #include <inc/infrared.h>
 
+TaskHandle_t audioTaskHandle;
 
 Game *game;
 SkirmCom *com;
@@ -55,6 +56,10 @@ void setup() {
     if (digitalRead(PIN_PWR_OFF)) audioGain = 0;
     audioInit(audioGain);
 
+    // Creating audio task and pinning it to core 0
+    xTaskCreatePinnedToCore(audioLoopTask, "audioLoopTask", 10000, NULL, 0, &audioTaskHandle, 0);
+    logDebug("Pinned Audio Task to Core 0");
+
     game = new Game();
     bluetoothDriver = new SkirmishBluetooth();
     userInterface = new SkirmishUI(&display, bluetoothDriver, game);
@@ -83,7 +88,6 @@ bool hitpointEvent = false;
 
 void loop() {
     hardwareLoop();
-    audioLoop();
 
     mnow = millis();
 
