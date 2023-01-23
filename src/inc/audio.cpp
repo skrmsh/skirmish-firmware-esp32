@@ -59,15 +59,17 @@ void audioBegin(const char* filename) {
 }
 
 /**
- * Keeps the current audiofile playing
+ * Keeps the current audio file playing.
 */
-void audioLoop() {
-    if (!isPlaying) return;
+void audioLoopTask(void *param) {
+    while (1) {
+        if (!isPlaying) continue;
 
-    if (!wav->isRunning()) {
-        isPlaying = false;
-        return;
+        if (!wav->isRunning()) {
+            isPlaying = false;
+            continue;
+        }
+
+        if(!wav->loop()) wav->stop();
     }
-    
-    if(!wav->loop()) wav->stop();
 }
