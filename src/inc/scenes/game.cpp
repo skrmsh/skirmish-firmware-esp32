@@ -81,18 +81,18 @@ void GameScene::render() {
 
     // Set hitpoint color
     if (millis() < hitBlinkUntil) {
-        hitpointSelectAnimation(HP_ADDR_PHASER, HP_ANIM_BLINK);
-        hitpointSetAnimationSpeed(HP_ADDR_PHASER, 15);
-        hitpointSetColor(HP_ADDR_PHASER, 255, 255, 255);
+        hitpointSelectAnimation(HP_ANIM_BLINK);
+        hitpointSetAnimationSpeed(15);
+        hitpointSetColor(255, 255, 255);
     }
     else {
         if (!ui->game->player.isInviolable()) {
-            hitpointSelectAnimation(HP_ADDR_PHASER, HP_ANIM_SOLID);
-            hitpointSetColor(HP_ADDR_PHASER, player_r, player_g, player_b);
+            hitpointSelectAnimation(HP_ANIM_SOLID);
+            hitpointSetColor(player_r, player_g, player_b);
         }
         else {
-            hitpointSelectAnimation(HP_ADDR_PHASER, HP_ANIM_SOLID);
-            hitpointSetColor(HP_ADDR_PHASER, 0, 0, 0);
+            hitpointSelectAnimation(HP_ANIM_SOLID);
+            hitpointSetColor(0, 0, 0);
         }
     }
 

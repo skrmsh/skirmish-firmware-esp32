@@ -36,16 +36,16 @@ void SplashscreenScene::onSet(uint8_t id) {
         // Setting hitpoints to breathe animation
         // to indicate that the device is waiting
         // for connection
-        hitpointSelectAnimation(HP_ADDR_PHASER, HP_ANIM_BREATHE);
-        hitpointSetAnimationSpeed(HP_ADDR_PHASER, 2);
-        hitpointSetColor(HP_ADDR_PHASER, SDT_PRIMARY_COLOR_RGB);
+        hitpointSelectAnimation(HP_ANIM_BREATHE);
+        hitpointSetAnimationSpeed(2);
+        hitpointSetColor(SDT_PRIMARY_COLOR_RGB);
     }
     else if (id == SCENE_NO_GAME) {
         strcpy(splashText, "Please join a game!");
 
         // turn off leds
-        hitpointSelectAnimation(HP_ADDR_PHASER, HP_ANIM_SOLID);
-        hitpointSetColor(HP_ADDR_PHASER, 0, 0, 0);
+        hitpointSelectAnimation(HP_ANIM_SOLID);
+        hitpointSetColor(0, 0, 0);
     }
     else {
         strcpy(splashText, "<INVALID SCENE>");
