@@ -75,7 +75,8 @@ uint32_t lastFiredShot = 0;
 uint32_t mnow;
 
 uint32_t lastReceivedShot = 0;
-uint8_t pid, sid;
+uint8_t pid;
+uint16_t sid;
 
 bool triggerPressed = false;
 bool hitpointEvent = false;
