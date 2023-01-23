@@ -20,7 +20,14 @@ Copyright (C) 2023 Ole Lange
 #define LOGLEVEL_OFF   5
 
 // Hitpoint Addresses
-#define HP_ADDR_PHASER  0x50
+#define HP_ADDR_PHASER     0x50
+#define HP_ADDR_BREAST     0x51
+#define HP_ADDR_BACK       0x52
+#define HP_ADDR_SHOULDER_L 0x53
+#define HP_ADDR_SHOULDER_R 0x54
+#define HP_ADDR_HEAD       0x55
+#define HP_ADDR_HITPOINT   0x56
+#define HP_ADDR_UNDEFINED  0x57
 
 // Hitpoint Animations
 #define HP_ANIM_SOLID   0
