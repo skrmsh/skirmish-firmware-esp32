@@ -20,6 +20,7 @@ class GameScene : public SkirmishUIScene {
     void render();
 
     uint32_t hitBlinkUntil = 0;
+    uint32_t hasHitMsgBoxUntil = 0;
 
     bool prevCanFire = false;
     bool canFire = false;

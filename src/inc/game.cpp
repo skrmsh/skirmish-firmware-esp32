@@ -52,6 +52,7 @@ Player::Player() {
     // Allocating 33 bytes of memory for the player name
     name = (char*) malloc(33 * sizeof(char));
     wasHitBy = (char*) malloc(33 * sizeof(char));
+    hasHitName = (char*) malloc(33 * sizeof(char));
 }
 
 /**

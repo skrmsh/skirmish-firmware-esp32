@@ -47,6 +47,8 @@ class SkirmishUI {
         Game *game;
         SkirmishBluetooth *bluetooth;
 
+        bool clearRequired = false;
+
         SkirmishUI(SkirmishDisplay *display,
                    SkirmishBluetooth *bluetooth,
                    Game *game);

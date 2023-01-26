@@ -95,6 +95,15 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
                 strcpy(game->player.wasHitBy, root["name"]);
             }
         }
+
+        // This action is called when a shot that was send hitted another player
+        if (action == ACTION_SHOT_HIT) {
+            game->player.hasHit = true;
+
+            if (root.containsKey("name")) {
+                strcpy(game->player.hasHitName, root["name"]);
+            }
+        }
     }
 
     if (debugPrintJson) {
