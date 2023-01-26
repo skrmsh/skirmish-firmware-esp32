@@ -122,6 +122,11 @@ void SkirmishUI::render() {
 
     renderRequired = false;
 
+    if (clearRequired) {
+        clearRequired = false;
+        display->clear();
+    }
+
     renderStatusOverlay();
     currentScene->render();
 }

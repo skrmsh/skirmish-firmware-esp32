@@ -33,17 +33,33 @@ void GameScene::onSet(uint8_t id) {
 */
 bool GameScene::update() {
 
+    uint32_t mnow = millis();
+
     // Start blinking if the player got hit
     if (ui->game->player.wasHit) {
         hardwareVibrate(150);
-        hitBlinkUntil = millis() + 1500;
+        hitBlinkUntil = mnow + 1500;
         ui->game->player.wasHit = false;
         return true;
     }
 
     // Stop blinking after the specified delay
-    if (millis() > hitBlinkUntil && hitBlinkUntil != 0) {
+    if (mnow > hitBlinkUntil && hitBlinkUntil != 0) {
         hitBlinkUntil = 0;
+        return true;
+    }
+
+    // Show msgbox if the player has hit
+    if (ui->game->player.hasHit) {
+        hasHitMsgBoxUntil = mnow + 2000;
+        ui->game->player.hasHit = false;
+        return true;
+    }
+
+    // Hide hitbox after the specified delay
+    if (mnow > hasHitMsgBoxUntil && hasHitMsgBoxUntil != 0) {
+        hasHitMsgBoxUntil = 0;
+        ui->clearRequired = true;
         return true;
     }
 
@@ -80,7 +96,7 @@ void GameScene::render() {
     player_b = ui->game->player.color_b;
 
     // Set hitpoint color
-    if (millis() < hitBlinkUntil) {
+    if (hitBlinkUntil > 0) {
         hitpointSelectAnimation(HP_ANIM_BLINK);
         hitpointSetAnimationSpeed(15);
         hitpointSetColor(255, 255, 255);
@@ -117,19 +133,21 @@ void GameScene::render() {
         ui->display->centerText(ui->game->team.name, 100, 1);
     }
 
-    // Drawing player ranking
-    char rankingString[8];
-    sprintf(rankingString, "%d/%d", ui->game->player.rank, ui->game->playerCount);
-    ui->display->setFont(SDT_HEADER_FONT);
-    ui->display->setTextColor(SDT_PRIMARY_COLOR);
-    ui->display->centerText(rankingString, 160, 1, true, SDT_BG_COLOR);
-
-    // Drawing team ranking
-    if (ui->game->team.tid != 0) { // Team ID 0 -> No Team
-        sprintf(rankingString, "%d/%d", ui->game->team.rank, ui->game->teamCount);
-        ui->display->setFont(SDT_SUBHEADER_FONT);
+    // Drawing player ranking (only if no has hit msg is visible)
+    if (hasHitMsgBoxUntil == 0) {
+        char rankingString[8];
+        sprintf(rankingString, "%d/%d", ui->game->player.rank, ui->game->playerCount);
+        ui->display->setFont(SDT_HEADER_FONT);
         ui->display->setTextColor(SDT_PRIMARY_COLOR);
-        ui->display->centerText(rankingString, 185, 1, true, SDT_BG_COLOR);
+        ui->display->centerText(rankingString, 160, 1, true, SDT_BG_COLOR);
+
+        // Drawing team ranking
+        if (ui->game->team.tid != 0) { // Team ID 0 -> No Team
+            sprintf(rankingString, "%d/%d", ui->game->team.rank, ui->game->teamCount);
+            ui->display->setFont(SDT_SUBHEADER_FONT);
+            ui->display->setTextColor(SDT_PRIMARY_COLOR);
+            ui->display->centerText(rankingString, 185, 1, true, SDT_BG_COLOR);
+        }
     }
 
      // Clear line with ammo and points display
@@ -216,5 +234,20 @@ void GameScene::render() {
 
     // Drawing Additional Symbol field
     // TODO
+
+    // Drawing msg box showing if you've hit someone
+    if (hasHitMsgBoxUntil > 0) {
+        ui->display->tft.fillRect(35, 100, 170, 80, ui->display->gammaCorrection(SDT_BG_COLOR));
+        ui->display->tft.drawRect(35, 100, 170, 80, ui->display->gammaCorrection(SDT_SECONDARY_COLOR));
+
+        // Drawing player name
+        ui->display->setFont(SDT_HEADER_FONT);
+        ui->display->setTextColor(SDT_PRIMARY_COLOR);
+        ui->display->centerText("Hit!", 140, 1);
+
+        ui->display->setFont(SDT_SUBHEADER_FONT);
+        ui->display->setTextColor(SDT_TEXT_COLOR);
+        ui->display->centerText(ui->game->player.hasHitName, 170, 1);
+    }
 
 }

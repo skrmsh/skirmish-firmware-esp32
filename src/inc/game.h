@@ -37,6 +37,9 @@ class Player {
         bool wasHit = false;
         char* wasHitBy;
 
+        bool hasHit = false;
+        char* hasHitName;
+
         bool wasDataUpdated = false;
         void dataWasUpdated();
         void afterDataUpdate();
