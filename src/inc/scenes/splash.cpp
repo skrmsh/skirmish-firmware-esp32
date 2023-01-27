@@ -23,7 +23,7 @@ SplashscreenScene::SplashscreenScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
 
     splashText = (char*) malloc(32 * sizeof(char));
 
-    qrBytes = (uint8_t*) malloc(qrcode_getBufferSize(0) * sizeof(uint8_t));
+    qrBytes = (uint8_t*) malloc(qrcode_getBufferSize(3) * sizeof(uint8_t));
 }
 
 /**
