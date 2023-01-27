@@ -31,6 +31,8 @@ SkirmCom::SkirmCom(SkirmishBluetooth *bleDriver, Game *game, SkirmishUI *ui) {
 */
 void SkirmCom::init() {
     this->bleDriver->setOnReceiveCallback(SkirmCom::onReceiveCallback);
+    this->bleDriver->setOnConnectCallback(SkirmCom::onConnectCallback);
+    this->bleDriver->setOnDisconnectCallback(SkirmCom::onDisconnectCallback);
 
     jsonOutDocument = new DynamicJsonDocument(512);
     logDebug("Set onReceive callback!");
@@ -51,9 +53,6 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
     JsonObject root = data->as<JsonObject>();
 
     bool debugPrintJson = true;
-
-    // Updating PGT data
-    game->updatePGTData(&root);
 
     // Iterating over the "a" array and executing all actions
     for(int action : root["a"].as<JsonArray>()) {
@@ -84,6 +83,13 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         if (action == ACTION_JOINED_GAME) {
             // Changing the UI scene
             ui->setScene(SCENE_JOINED_GAME);
+            game->reset();
+            continue;
+        }
+
+        // This action is called when the game is closed
+        if (action == ACTION_GAME_CLOSED) {
+            game->reset();
             continue;
         }
 
@@ -106,11 +112,28 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         }
     }
 
+    // Updating PGT data
+    game->updatePGTData(&root);
+
     if (debugPrintJson) {
         logDebug("Received JSON Data:");
         serializeJson(root, Serial);
         Serial.println();
     }
+}
+
+/**
+ * Member function that is called by the onConnectCallback function
+*/
+void SkirmCom::onConnect() {
+}
+
+/**
+ * Member function that is called by the onDisconnectCallback function
+*/
+void SkirmCom::onDisconnect() {
+    // Resetting game on disconnect
+    game->reset();
 }
 
 /**
@@ -122,6 +145,22 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
 */
 void SkirmCom::onReceiveCallback(void * context, DynamicJsonDocument *data) {
     reinterpret_cast<SkirmCom*>(context)->onReceive(data);
+}
+
+/**
+ * onConnect callback for the bluetooth driver. Is called when the
+ * modem connects to the device.
+*/
+void SkirmCom::onConnectCallback(void * context) {
+    reinterpret_cast<SkirmCom*>(context)->onConnect();
+}
+
+/**
+ * onDisconnect callback for the bluetooth driver. Is called when the
+ * modem is disconnected from the device.
+*/
+void SkirmCom::onDisconnectCallback(void * context) {
+    reinterpret_cast<SkirmCom*>(context)->onDisconnect();
 }
 
 /**

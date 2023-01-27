@@ -31,6 +31,12 @@ class SkirmCom {
         static void onReceiveCallback(void *context, DynamicJsonDocument *data);
         void onReceive(DynamicJsonDocument *data);
 
+        static void onConnectCallback(void *context);
+        void onConnect();
+
+        static void onDisconnectCallback(void *context);
+        void onDisconnect();
+
         void shotFired(uint16_t sid);
         void gotHit(uint8_t pid, uint16_t sid);
 
