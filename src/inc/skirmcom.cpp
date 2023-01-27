@@ -90,6 +90,7 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         // This action is called when the game is closed
         if (action == ACTION_GAME_CLOSED) {
             game->reset();
+            ui->setScene(SCENE_NO_GAME);
             continue;
         }
 
