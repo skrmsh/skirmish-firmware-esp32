@@ -46,4 +46,9 @@ class SkirmishBluetooth {
         void *com;
         void (*onReceiveCallback)(void *context, DynamicJsonDocument *);
         void setOnReceiveCallback(void(* callback)(void *context, DynamicJsonDocument*));
+
+        void (*onConnectCallback)(void *context);
+        void setOnConnectCallback(void(* callback)(void *context));
+        void (*onDisconnectCallback)(void *context);
+        void setOnDisconnectCallback(void(* callback)(void *context));
 };

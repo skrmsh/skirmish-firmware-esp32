@@ -29,6 +29,12 @@ Team::Team() {
 }
 
 /**
+ * Reset the team data
+*/
+void Team::reset() {
+}
+
+/**
  * Function that is called when a field is changed while data update
 */
 void Team::dataWasUpdated() {
@@ -53,6 +59,35 @@ Player::Player() {
     name = (char*) malloc(33 * sizeof(char));
     wasHitBy = (char*) malloc(33 * sizeof(char));
     hasHitName = (char*) malloc(33 * sizeof(char));
+    this->reset();
+}
+
+/**
+ * Reset player data
+*/
+void Player::reset() {
+    strcpy(name, "");
+    strcpy(wasHitBy, "");
+    strcpy(hasHitName, "");
+
+    pid = 0;
+    health = 0;
+    points = 0;
+    color_r = 0;
+    color_g = 0;
+    color_b = 0;
+    colorBeforeGame = false;
+    ammoLimit = false;
+    ammo = 0;
+    phaserEnable = false;
+    phaserDisableUntil = 0;
+    maxShotInterval = 0;
+    rank = 0;
+    inviolable = true;
+    inviolableUntil = 0;
+    wasHit = false;
+    hasHit = false;
+    
 }
 
 /**
@@ -104,6 +139,15 @@ Game::Game() {
     gid = (char*) malloc(33 * sizeof(char));
     team = Team();
     player = Player();
+}
+
+/**
+ * Reset the game instance to default data
+*/
+void Game::reset() {
+    strcpy(gid, "");
+    team.reset();
+    player.reset();
 }
 
 /**

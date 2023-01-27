@@ -17,6 +17,8 @@ class Player {
     public:
         Player();
 
+        void reset();
+
         uint8_t pid;
         char *name;
         float health;
@@ -56,6 +58,8 @@ class Team {
     public:
         Team();
 
+        void reset();
+
         uint8_t tid = 0;
         uint8_t playerCount;
         uint32_t points;
@@ -75,6 +79,8 @@ class Game {
 
     public:
         Game();
+
+        void reset();
 
         Player player;
         Team team;

@@ -53,6 +53,7 @@ class ServerCallbacks : public BLEServerCallbacks {
     void onConnect(BLEServer *server) {
         logInfo("Bluetooth connected!");
         ble->setConnectionState(true);
+        ble->onConnectCallback(this->ble->com);
     }
 
     /**
@@ -61,6 +62,7 @@ class ServerCallbacks : public BLEServerCallbacks {
     void onDisconnect(BLEServer *server) {
         logError("Bluetooth disconnected!");
         ble->setConnectionState(false);
+        ble->onDisconnectCallback(this->ble->com);
         ble->startAdvertising();
     }
 };
@@ -228,4 +230,22 @@ void SkirmishBluetooth::writeJsonData(DynamicJsonDocument *data) {
 */
 void SkirmishBluetooth::setOnReceiveCallback(void(* callback)(void *context, DynamicJsonDocument*)) {
     this->onReceiveCallback = callback;
+}
+
+/**
+ * Sets the callback that gets called on connection
+ * 
+ * @param callback the callback function
+*/
+void SkirmishBluetooth::setOnConnectCallback(void(*callback)(void *context)) {
+    this->onConnectCallback = callback;
+}
+
+/**
+ * Sets the callback that gets called when the device was disconnected
+ * 
+ * @param callback the callback function
+*/
+void SkirmishBluetooth::setOnDisconnectCallback(void(*callback)(void *context)) {
+    this->onDisconnectCallback = callback;
 }
