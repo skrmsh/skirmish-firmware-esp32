@@ -10,11 +10,17 @@ Copyright (C) 2023 Ole Lange
 
 #include <inc/scenes/scene.h>
 
+#include <stdint.h>
+#include <qrcode.h>
+
 class SplashscreenScene : public SkirmishUIScene {
 
     private:
 
     char* splashText;
+
+    QRCode nameQR;
+    uint8_t* qrBytes;
 
     public:
 
