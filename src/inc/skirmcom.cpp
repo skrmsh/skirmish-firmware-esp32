@@ -54,6 +54,10 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
 
     bool debugPrintJson = true;
 
+
+    // Updating PGT data
+    game->updatePGTData(&root);
+
     // Iterating over the "a" array and executing all actions
     for(int action : root["a"].as<JsonArray>()) {
         if (action != 0) { // Prevent spamming keep-alive actions on the log
@@ -83,13 +87,13 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         if (action == ACTION_JOINED_GAME) {
             // Changing the UI scene
             ui->setScene(SCENE_JOINED_GAME);
-            game->reset();
             continue;
         }
 
         // This action is called when the game is closed
         if (action == ACTION_GAME_CLOSED) {
             game->reset();
+            ui->setScene(SCENE_NO_GAME);
             continue;
         }
 
@@ -111,9 +115,6 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
             }
         }
     }
-
-    // Updating PGT data
-    game->updatePGTData(&root);
 
     if (debugPrintJson) {
         logDebug("Received JSON Data:");
