@@ -87,6 +87,8 @@ void Player::reset() {
     inviolableUntil = 0;
     wasHit = false;
     hasHit = false;
+
+    currentSid = 1;
     
 }
 
