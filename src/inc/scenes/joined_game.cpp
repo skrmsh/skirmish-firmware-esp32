@@ -41,6 +41,7 @@ bool JoinedGameScene::update() {
  * Renders the scene
 */
 void JoinedGameScene::render() {
+    #ifndef NO_DISPLAY
     ui->display->setFont(SDT_HEADER_FONT);
 
     ui->display->setTextColor(SDT_PRIMARY_COLOR);
@@ -49,4 +50,5 @@ void JoinedGameScene::render() {
     ui->display->setFont(SDT_SUBHEADER_FONT);
     ui->display->setTextColor(SDT_TEXT_COLOR);
     ui->display->centerText(ui->game->gid, 170, 1);
+    #endif
 }

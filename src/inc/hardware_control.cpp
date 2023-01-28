@@ -31,9 +31,11 @@ bool wasTriggerPressed = false;
  * Interrupt subroutine which is called when the trigger
  * button is pressed and the falling edge interrupt fires.
 */
+#ifndef NO_PHASER
 void IRAM_ATTR triggerISR() {
     wasTriggerPressed = true;
 }
+#endif
 
 /**
  * This function returns true if the trigger button was
@@ -96,9 +98,11 @@ float hardwareBatteryPercent() {
  * @param duration Duration the motor should vibrate (in milliseconds)
 */
 void hardwareVibrate(uint16_t duration) {
+    #ifndef NO_VIBR_MOTOR
     logDebug("Vibrating for %d milliseconds", duration);
     digitalWrite(PIN_VIBR_MOTOR, HIGH);
     vibrateUntil = millis() + duration;
+    #endif
 }
 
 /**
@@ -106,10 +110,12 @@ void hardwareVibrate(uint16_t duration) {
 */
 void hardwareLoop() {
     // If enabled turn off the vibration motor
+    #ifndef NO_VIBR_MOTOR
     if (vibrateUntil > 0 && millis() >= vibrateUntil) {
         digitalWrite(PIN_VIBR_MOTOR, LOW);
         vibrateUntil = 0;
     }
+    #endif
 }
 
 /**
@@ -127,14 +133,20 @@ void hardwareInit() {
 
     // Setting pin modes
     pinMode(PIN_PWR_OFF, OUTPUT);
+    #ifndef NO_PHASER
     pinMode(PIN_TRIGGER, INPUT_PULLUP);
+    #endif
+    #ifndef NO_VIBR_MOTOR
     pinMode(PIN_VIBR_MOTOR, OUTPUT);
+    #endif
 
     // Configure ADC
     analogReadResolution(adcResolution);
     analogSetAttenuation(ADC_2_5db);
 
     // Attaching an interrupt to the trigger pin
+    #ifndef NO_PHASER
     attachInterrupt(PIN_TRIGGER, triggerISR, FALLING);
+    #endif
 
 }
