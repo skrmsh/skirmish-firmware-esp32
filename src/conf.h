@@ -14,7 +14,7 @@ Copyright (C) 2023 Ole Lange
 // Configuration values:
 
 // Defining the module type, using the same schema as the hitpoint mcfg
-#define MODULE_TYPE MODULE_BREAST
+#define MODULE_TYPE MODULE_PHASER
 
 // Logging 
 #define LOG_SERIAL_SPEED 115200
@@ -37,8 +37,7 @@ Copyright (C) 2023 Ole Lange
 #if MODULE_TYPE == MODULE_PHASER
 const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
 #elif MODULE_TYPE == MODULE_BREAST
-//const uint8_t attachedHitpoints[4] = {HP_ADDR_BREAST, HP_ADDR_SHOULDER_L, HP_ADDR_SHOULDER_R, HP_ADDR_BACK};
-const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
+const uint8_t attachedHitpoints[4] = {HP_ADDR_BREAST, HP_ADDR_SHOULDER_L, HP_ADDR_SHOULDER_R, HP_ADDR_BACK};
 #endif
 
 
