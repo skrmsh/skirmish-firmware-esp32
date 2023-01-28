@@ -76,7 +76,10 @@ void SkirmishUI::setScene(uint8_t scene) {
 
     currentScene->onSet(scene);
 
+    #ifndef NO_DISPLAY
     display->clear();
+    #endif
+
     setRenderingRequired();
 
     logDebug("Changed to scene %d", scene);
@@ -124,14 +127,19 @@ void SkirmishUI::render() {
 
     if (clearRequired) {
         clearRequired = false;
+        #ifndef NO_DISPLAY
         display->clear();
+        #endif
     }
 
+    #ifndef NO_DISPLAY
     renderStatusOverlay();
+    #endif
     currentScene->render();
 }
 
 
+#ifndef NO_DISPLAY
 /**
  * Renders the status overlay (top edge)
 */
@@ -173,3 +181,4 @@ void SkirmishUI::renderStatusOverlay() {
     // Draw the Horizontal Rule
     display->tft.drawLine(0, 16, 240, 16, display->gammaCorrection(SDT_TEXT_COLOR));
 }
+#endif

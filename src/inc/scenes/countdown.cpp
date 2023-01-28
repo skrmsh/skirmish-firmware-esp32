@@ -56,7 +56,7 @@ bool CountdownScene::update() {
  * Renders the scene
 */
 void CountdownScene::render() {
-    
+    #ifndef NO_DISPLAY
     ui->display->setFont(SDT_SUBHEADER_FONT);
     ui->display->setTextColor(SDT_TEXT_COLOR);
     ui->display->centerText("START  IN", 50, 1);
@@ -66,5 +66,5 @@ void CountdownScene::render() {
     ui->display->setTextColor(SDT_PRIMARY_COLOR);
 
     ui->display->centerText(countdown, 185, 3, true, SDT_BG_COLOR);
-
+    #endif
 }

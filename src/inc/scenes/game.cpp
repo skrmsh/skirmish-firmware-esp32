@@ -112,6 +112,7 @@ void GameScene::render() {
         }
     }
 
+    #ifndef NO_DISPLAY
     // Drawing game name
     if (strlen(ui->game->gid) < 10) // Selecting font size based on length
         ui->display->setFont(SDT_HEADER_FONT);
@@ -249,5 +250,6 @@ void GameScene::render() {
         ui->display->setTextColor(SDT_TEXT_COLOR);
         ui->display->centerText(ui->game->player.hasHitName, 170, 1);
     }
+    #endif
 
 }

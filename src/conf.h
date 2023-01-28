@@ -14,7 +14,7 @@ Copyright (C) 2023 Ole Lange
 // Configuration values:
 
 // Defining the module type, using the same schema as the hitpoint mcfg
-#define MODULE_TYPE MODULE_PHASER
+#define MODULE_TYPE MODULE_BREAST
 
 // Logging 
 #define LOG_SERIAL_SPEED 115200
@@ -34,7 +34,12 @@ Copyright (C) 2023 Ole Lange
 
 // This is a list of all hitpoints attached to the device
 // this firmware is compiled for.
+#if MODULE_TYPE == MODULE_PHASER
 const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
+#elif MODULE_TYPE == MODULE_BREAST
+//const uint8_t attachedHitpoints[4] = {HP_ADDR_BREAST, HP_ADDR_SHOULDER_L, HP_ADDR_SHOULDER_R, HP_ADDR_BACK};
+const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
+#endif
 
 
 // Misc hardware pins
@@ -43,6 +48,11 @@ const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
 #define PIN_VIBR_MOTOR    2
 #define PIN_VBAT_MEASURE 32
 #define PIN_IR_LED 33
+
+#if MODULE_TYPE != MODULE_PHASER
+#define NO_PHASER
+#define NO_VIBR_MOTOR
+#endif
 
 // voltage divider between the battery voltage and the vbat measure pin
 // VBAT_RHI is the value of the resistor between VBAT_MEASURE and B+
@@ -66,6 +76,10 @@ const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
 #define PIN_TFT_RESET  16
 #define PIN_TFT_BLCTRL 17
 
+#if MODULE_TYPE != MODULE_PHASER
+#define NO_DISPLAY
+#endif
+
 #define GAMMA_CORRECTION // Apply gamma correction to the display#
 
 // Audio / Speaker Amp
@@ -73,6 +87,10 @@ const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
 #define PIN_SPK_LRCLK 25
 #define PIN_SPK_BCLK 26
 #define PIN_SPK_DIN 27
+
+#if MODULE_TYPE != MODULE_PHASER
+#define NO_AUDIO
+#endif
 
 // UI
 // The UI is refreshed allways when new data is available but to keep

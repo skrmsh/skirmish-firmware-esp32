@@ -70,6 +70,7 @@ bool SplashscreenScene::update() {
  * Renders the scene
 */
 void SplashscreenScene::render() {
+    #ifndef NO_DISPLAY
     ui->display->setFont(SDT_HEADER_FONT);
 
     uint8_t base_y = 140;
@@ -95,4 +96,5 @@ void SplashscreenScene::render() {
             }
         }
     }
+    #endif
 }
