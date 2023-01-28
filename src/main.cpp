@@ -75,7 +75,6 @@ void setup() {
     audioBegin("/bootup.wav");
 }
 
-uint16_t currentSid = 1;
 uint32_t lastFiredShot = 0;
 uint32_t mnow;
 
@@ -99,10 +98,10 @@ void loop() {
             game->player.canFire() &&
             mnow - lastFiredShot > game->player.maxShotInterval) {
             
-            infraredTransmitShot(game->player.pid, currentSid);
+            infraredTransmitShot(game->player.pid, game->player.currentSid);
             audioBegin("/blaster.wav");
             hardwareVibrate(150);
-            com->shotFired(currentSid);
+            com->shotFired(game->player.currentSid);
 
             if (game->player.ammoLimit) {
                 game->player.ammo -= 1;
@@ -110,7 +109,7 @@ void loop() {
             }
 
             lastFiredShot = mnow;
-            currentSid ++;
+            game->player.currentSid ++;
         }
 
         if (hitpointEvent && !game->player.isInviolable()) {

@@ -49,6 +49,8 @@ class Player {
         bool canFire();
         bool isInviolable();
 
+        uint16_t currentSid;
+
 };
 
 class Team {
