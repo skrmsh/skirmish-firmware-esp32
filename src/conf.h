@@ -14,7 +14,7 @@ Copyright (C) 2023 Ole Lange
 // Configuration values:
 
 // Defining the module type, using the same schema as the hitpoint mcfg
-#define MODULE_TYPE MODULE_PHASER
+#define MODULE_TYPE MODULE_BREAST
 
 // Logging 
 #define LOG_SERIAL_SPEED 115200
