@@ -83,16 +83,20 @@ uint32_t hitpointReadShotRaw(uint8_t addr) {
  * Reads the last received shot data from every connected hitpoint and
  * returns the first which is not 0x00000000
  * 
+ * @param [out] addr address where the shot was received
  * @return Raw shot data packet. If 0, no shot was received.
 */
-uint32_t hitpointReadShotRaw() {
+uint32_t hitpointReadShotRaw(uint8_t* addr) {
     uint32_t retVal = 0;
     
     // Read every hitpoint, but only write the first which isn't
     // zero to the return value. This causes that the first shot
     // is used but every hitpoint it reset
-    for (uint8_t addr : attachedHitpoints) {
-        if (retVal == 0) retVal = hitpointReadShotRaw(addr);
+    for (uint8_t a : attachedHitpoints) {
+        if (retVal == 0) {
+            retVal = hitpointReadShotRaw(a);
+            *addr = a;
+        }
     }
 
     return retVal;

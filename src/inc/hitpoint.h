@@ -20,7 +20,7 @@ void hitpointInit();
 
 bool hitpointEventTriggered();
 uint32_t hitpointReadShotRaw(uint8_t addr);
-uint32_t hitpointReadShotRaw();
+uint32_t hitpointReadShotRaw(uint8_t *addr);
 
 void hitpointSelectAnimation(uint8_t addr, uint8_t animation);
 void hitpointSelectAnimation(uint8_t animation);

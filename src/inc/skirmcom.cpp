@@ -191,18 +191,20 @@ void SkirmCom::shotFired(uint16_t sid) {
  * @param pid The received Player ID
  * @param sid The received Shot ID
 */
-void SkirmCom::gotHit(uint8_t pid, uint16_t sid) {
+void SkirmCom::gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation) {
     // Clear current data
     jsonOutDocument->clear();
 
     // Generating Json Data
     /*
-    { "a": [ACTION_GOT_HIT], "pid": pid, "sid": sid }
+    { "a": [ACTION_GOT_HIT], "pid": pid, "sid": sid, "hp": hitLocation}
     */
    JsonArray actions = jsonOutDocument->createNestedArray("a");
    actions.add(ACTION_GOT_HIT);
    jsonOutDocument->operator[]("pid") = pid;
    jsonOutDocument->operator[]("sid") = sid;
+   jsonOutDocument->operator[]("hp") = hitLocation;
+
 
    // Sending data
    bleDriver->writeJsonData(jsonOutDocument);

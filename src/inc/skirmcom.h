@@ -38,6 +38,6 @@ class SkirmCom {
         void onDisconnect();
 
         void shotFired(uint16_t sid);
-        void gotHit(uint8_t pid, uint16_t sid);
+        void gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation);
 
 };
