@@ -26,3 +26,9 @@ jobs:
 
       - name: Build PlatformIO Project
         run: pio run
+  
+      - name: Archive firmware artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ESP32 Firmware (Phaser)
+          path: .pio/build/esp32dev/firmware.bin
