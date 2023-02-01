@@ -36,8 +36,8 @@ Copyright (C) 2023 Ole Lange
 // this firmware is compiled for.
 #if MODULE_TYPE == MODULE_PHASER
 const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
-#elif MODULE_TYPE == MODULE_BREAST
-const uint8_t attachedHitpoints[4] = {HP_ADDR_BREAST, HP_ADDR_SHOULDER_L, HP_ADDR_SHOULDER_R, HP_ADDR_BACK};
+#elif MODULE_TYPE == MODULE_CHEST
+const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L, HP_ADDR_SHOULDER_R, HP_ADDR_BACK};
 #endif
 
 

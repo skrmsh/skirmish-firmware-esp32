@@ -16,8 +16,8 @@ Copyright (C) 2023 Ole Lange
 // Prefixes for the BLE name
 #if MODULE_TYPE == MODULE_PHASER
     const char* namePrefix = "skrmphsr";
-#elif MODULE_TYPE == MODULE_BREAST
-    const char* namePrefix = "skrmbrst";
+#elif MODULE_TYPE == MODULE_CHEST
+    const char* namePrefix = "skrmvest";
 #elif MODULE_TYPE == MODULE_HITPOINT
     const char* namePrefix = "skrmhtpt";
 #endif
