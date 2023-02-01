@@ -104,6 +104,8 @@ uint32_t lastReceivedShot = 0;
 uint8_t pid;
 uint16_t sid;
 
+uint8_t hitLocation;
+
 bool triggerPressed = false;
 bool hitpointEvent = false;
 
@@ -141,8 +143,9 @@ void loop() {
         #endif
 
         if (hitpointEvent && !game->player.isInviolable()) {
-            lastReceivedShot = hitpointReadShotRaw();
-            logDebug("Received Hitpoint Data: %08x", lastReceivedShot);
+            lastReceivedShot = hitpointReadShotRaw(&hitLocation);
+            hitLocation = hitLocation ^ 0x50;
+            logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot, hitLocation);
 
             if (lastReceivedShot != 0) { // Shot really contains data
                 pid = getPIDFromShot(lastReceivedShot);
@@ -151,7 +154,7 @@ void loop() {
                 // If the hitpoint received a shot from it's player do not
                 // notify the server.
                 if (pid != game->player.pid) {
-                    com->gotHit(pid, sid);
+                    com->gotHit(pid, sid, hitLocation);
                 }
             }
 

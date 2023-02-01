@@ -8,7 +8,7 @@ Copyright (C) 2023 Ole Lange
 
 // Hardware Module identifiers
 #define MODULE_PHASER   0b000
-#define MODULE_BREAST   0b001
+#define MODULE_CHEST   0b001
 #define MODULE_HITPOINT 0b110
 
 // Logging levels
@@ -21,7 +21,7 @@ Copyright (C) 2023 Ole Lange
 
 // Hitpoint Addresses
 #define HP_ADDR_PHASER     0x50
-#define HP_ADDR_BREAST     0x51
+#define HP_ADDR_CHEST      0x51
 #define HP_ADDR_BACK       0x52
 #define HP_ADDR_SHOULDER_L 0x53
 #define HP_ADDR_SHOULDER_R 0x54
