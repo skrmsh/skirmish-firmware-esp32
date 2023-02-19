@@ -12,6 +12,7 @@ Copyright (C) 2023 Ole Lange
 #include <inc/const.h>
 #include <inc/ui.h>
 #include <inc/time.h>
+#include <inc/hardware_control.h>
 
 #include <ArduinoJson.h>
 
@@ -113,6 +114,11 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
             if (root.containsKey("name")) {
                 strcpy(game->player.hasHitName, root["name"]);
             }
+        }
+
+        if (action == ACTION_POWER_OFF) {
+            logInfo("Good Bye!");
+            hardwarePowerOff();
         }
     }
 
