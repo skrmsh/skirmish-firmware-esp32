@@ -256,9 +256,12 @@ void hitpointSetColor(uint8_t addr, uint8_t r, uint8_t g, uint8_t b) {
     // Set Command
     i2cWriteBuffer[0] = HP_CMD_SET_COLOR;
     // Set r, g, b parameter
-    i2cWriteBuffer[1] = gamma8[r];
-    i2cWriteBuffer[2] = gamma8[g];
-    i2cWriteBuffer[3] = gamma8[b];
+    uint8_t dim_r = r * LED_MAX_BRIGHTNESS;
+    uint8_t dim_g = g * LED_MAX_BRIGHTNESS;
+    uint8_t dim_b = b * LED_MAX_BRIGHTNESS;
+    i2cWriteBuffer[1] = gamma8[dim_r];
+    i2cWriteBuffer[2] = gamma8[dim_g];
+    i2cWriteBuffer[3] = gamma8[dim_b];
     // Set end value
     i2cWriteBuffer[4] = 0;
     
