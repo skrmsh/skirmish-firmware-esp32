@@ -87,14 +87,21 @@ uint32_t hitpointReadShotRaw(uint8_t addr) {
  * @return Raw shot data packet. If 0, no shot was received.
 */
 uint32_t hitpointReadShotRaw(uint8_t* addr) {
+    // This function is typically called when one or more hitpoints triggered
+    // the hitpoint interrupt, to make sure that the data is ready when read
+    // this function will wait some time before starting to read the hitpoints
+    delay(50);
+
     uint32_t retVal = 0;
+    uint32_t hpVal = 0;
     
     // Read every hitpoint, but only write the first which isn't
     // zero to the return value. This causes that the first shot
     // is used but every hitpoint it reset
     for (uint8_t a : attachedHitpoints) {
-        if (retVal == 0) {
-            retVal = hitpointReadShotRaw(a);
+        hpVal = hitpointReadShotRaw(a);
+        if (retVal == 0 && hpVal != 0) {
+            retVal = hpVal;
             *addr = a;
         }
     }
