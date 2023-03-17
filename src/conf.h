@@ -14,13 +14,21 @@ Copyright (C) 2023 Ole Lange
 // Configuration values:
 
 // Defining the module type, using the same schema as the hitpoint mcfg
-#define MODULE_TYPE MODULE_PHASER
+#define MODULE_TYPE MODULE_CHEST
 
 // Logging 
 #define LOG_SERIAL_SPEED 115200
 // (Levels are 0->5 Debug, Info, Warn, Error, Fatal, Off)
 #define LOG_LEVEL        0
 
+// LED
+// Settings maxium brightness for vests to 0.5
+// -> vest hw prototype psu doesn't like all leds very bright
+#if MODULE_TYPE == MODULE_CHEST
+    #define LED_MAX_BRIGHTNESS 0.7
+#elif MODULE_TYPE == MODULE_PHASER
+    #define LED_MAX_BRIGHTNESS 1.0
+#endif
 
 // Hardware / Pinout config
 // Phaser Module V1.0 (Proto) specific values
