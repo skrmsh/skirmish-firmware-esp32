@@ -11,93 +11,83 @@ Copyright (C) 2023 Ole Lange
 #include <ArduinoJson.h>
 
 class Player {
+   private:
+   public:
+    Player();
 
-    private:
+    void reset();
 
-    public:
-        Player();
+    uint8_t pid;
+    char* name;
+    float health;
+    uint32_t points;
+    uint8_t color_r;
+    uint8_t color_g;
+    uint8_t color_b;
+    bool colorBeforeGame;
+    bool ammoLimit;
+    uint16_t ammo;
+    bool phaserEnable;
+    uint32_t phaserDisableUntil;
+    uint16_t maxShotInterval;
+    uint8_t rank;
+    bool inviolable;
+    uint32_t inviolableUntil;
 
-        void reset();
+    bool wasHit = false;
+    char* wasHitBy;
 
-        uint8_t pid;
-        char *name;
-        float health;
-        uint32_t points;
-        uint8_t color_r;
-        uint8_t color_g;
-        uint8_t color_b;
-        bool colorBeforeGame;
-        bool ammoLimit;
-        uint16_t ammo;
-        bool phaserEnable;
-        uint32_t phaserDisableUntil;
-        uint16_t maxShotInterval;
-        uint8_t rank;
-        bool inviolable;
-        uint32_t inviolableUntil;
+    bool hasHit = false;
+    char* hasHitName;
 
-        bool wasHit = false;
-        char* wasHitBy;
+    bool wasDataUpdated = false;
+    void dataWasUpdated();
+    void afterDataUpdate();
 
-        bool hasHit = false;
-        char* hasHitName;
+    bool canFire();
+    bool isInviolable();
 
-        bool wasDataUpdated = false;
-        void dataWasUpdated();
-        void afterDataUpdate();
-
-        bool canFire();
-        bool isInviolable();
-
-        uint16_t currentSid;
-
+    uint16_t currentSid;
 };
 
 class Team {
+   private:
+   public:
+    Team();
 
-    private:
+    void reset();
 
-    public:
-        Team();
+    uint8_t tid = 0;
+    uint8_t playerCount;
+    uint32_t points;
+    uint8_t rank;
+    char* name;
 
-        void reset();
-
-        uint8_t tid = 0;
-        uint8_t playerCount;
-        uint32_t points;
-        uint8_t rank;
-        char* name;
-
-        bool wasDataUpdated = false;
-        void dataWasUpdated();
-        void afterDataUpdate();
-
+    bool wasDataUpdated = false;
+    void dataWasUpdated();
+    void afterDataUpdate();
 };
 
-
 class Game {
+   private:
+   public:
+    Game();
 
-    private:
+    void reset();
 
-    public:
-        Game();
+    Player player;
+    Team team;
 
-        void reset();
+    char* gid;
+    uint8_t playerCount;
+    uint8_t teamCount;
+    uint32_t startTime;
 
-        Player player;
-        Team team;
+    bool wasDataUpdated = false;
+    void dataWasUpdated();
+    void afterDataUpdate();
 
-        char* gid;
-        uint8_t playerCount;
-        uint8_t teamCount;
-        uint32_t startTime;
-        
-        bool wasDataUpdated = false;
-        void dataWasUpdated();
-        void afterDataUpdate();
+    void updatePGTData(JsonObject* root);
 
-        void updatePGTData(JsonObject *root);
-
-        bool isRunning();
-
+    bool isRunning();
 };

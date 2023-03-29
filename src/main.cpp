@@ -5,20 +5,18 @@ Copyright (C) 2023 Ole Lange
 */
 
 #include <Arduino.h>
-
 #include <SPIFFS.h>
-
-#include <inc/log.h>
-#include <inc/hitpoint.h>
 #include <inc/const.h>
 #include <inc/hardware_control.h>
+#include <inc/hitpoint.h>
+#include <inc/log.h>
 #ifndef NO_DISPLAY
 #include <inc/display.h>
 #endif
-#include <inc/ui.h>
-#include <theme.h>
 #include <inc/bluetooth.h>
 #include <inc/skirmcom.h>
+#include <inc/ui.h>
+#include <theme.h>
 #ifndef NO_AUDIO
 #include <inc/audio.h>
 #endif
@@ -40,7 +38,6 @@ SkirmishUI *userInterface;
 
 bool previousConnectionState = false;
 
-
 void setup() {
     // Wait some time for the hitpoints to init
     delay(250);
@@ -49,39 +46,40 @@ void setup() {
     logInit();
     logInfo("Logging initialized. Welcome!");
 
-    #ifndef NO_DISPLAY
+#ifndef NO_DISPLAY
     display.init();
-    #endif
+#endif
 
     hardwareInit();
     hitpointInit();
-    #ifndef NO_PHASER
+#ifndef NO_PHASER
     infraredInit();
-    #endif
+#endif
 
     logInfo("Init: SPIFFS");
     SPIFFS.begin();
 
-    // Initing audio, when the pwr off button is pressed at boot
-    // the audio gain will be set to 0 -> silence
-    #ifndef NO_AUDIO
+// Initing audio, when the pwr off button is pressed at boot
+// the audio gain will be set to 0 -> silence
+#ifndef NO_AUDIO
     float audioGain = 0.6;
     if (digitalRead(PIN_PWR_OFF)) audioGain = 0;
     audioInit(audioGain);
 
     // Creating audio task and pinning it to core 0
-    xTaskCreatePinnedToCore(audioLoopTask, "audioLoopTask", 10000, NULL, 0, &audioTaskHandle, 0);
+    xTaskCreatePinnedToCore(audioLoopTask, "audioLoopTask", 10000, NULL, 0,
+                            &audioTaskHandle, 0);
     logDebug("Pinned Audio Task to Core 0");
-    #endif
+#endif
 
     game = new Game();
     bluetoothDriver = new SkirmishBluetooth();
-    
-    #ifndef NO_DISPLAY
+
+#ifndef NO_DISPLAY
     userInterface = new SkirmishUI(&display, bluetoothDriver, game);
-    #else
+#else
     userInterface = new SkirmishUI(NULL, bluetoothDriver, game);
-    #endif
+#endif
 
     com = new SkirmCom(bluetoothDriver, game, userInterface);
     bluetoothDriver->setCom(com);
@@ -92,9 +90,9 @@ void setup() {
 
     logInfo("Current Battery Voltage is %d", hardwareReadVBAT());
 
-    #ifndef NO_AUDIO
+#ifndef NO_AUDIO
     audioBegin("/bootup.wav");
-    #endif
+#endif
 }
 
 uint32_t lastFiredShot = 0;
@@ -118,18 +116,16 @@ void loop() {
     hitpointEvent = hitpointEventTriggered();
 
     if (game->isRunning()) {
-        #ifndef NO_PHASER
-        if (triggerPressed &&
-            game->player.canFire() &&
+#ifndef NO_PHASER
+        if (triggerPressed && game->player.canFire() &&
             mnow - lastFiredShot > game->player.maxShotInterval) {
-            
             infraredTransmitShot(game->player.pid, game->player.currentSid);
-            #ifndef NO_AUDIO
+#ifndef NO_AUDIO
             audioBegin("/blaster.wav");
-            #endif
-            #ifndef NO_VIBR_MOTOR
+#endif
+#ifndef NO_VIBR_MOTOR
             hardwareVibrate(150);
-            #endif
+#endif
             com->shotFired(game->player.currentSid);
 
             if (game->player.ammoLimit) {
@@ -138,16 +134,17 @@ void loop() {
             }
 
             lastFiredShot = mnow;
-            game->player.currentSid ++;
+            game->player.currentSid++;
         }
-        #endif
+#endif
 
         if (hitpointEvent && !game->player.isInviolable()) {
             lastReceivedShot = hitpointReadShotRaw(&hitLocation);
             hitLocation = hitLocation ^ 0x50;
-            logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot, hitLocation);
+            logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot,
+                     hitLocation);
 
-            if (lastReceivedShot != 0) { // Shot really contains data
+            if (lastReceivedShot != 0) {  // Shot really contains data
                 pid = getPIDFromShot(lastReceivedShot);
                 sid = getSIDFromShot(lastReceivedShot);
 
@@ -157,10 +154,9 @@ void loop() {
                     com->gotHit(pid, sid, hitLocation);
                 }
             }
-
         }
     }
-    
+
     userInterface->update();
     userInterface->render();
 }

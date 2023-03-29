@@ -11,18 +11,16 @@ Copyright (C) 2023 Ole Lange
 #include <inc/scenes/scene.h>
 
 class CountdownScene : public SkirmishUIScene {
-    private:
+   private:
     int16_t secLeft;
     int16_t prevSecLeft;
-    
+
     char* countdown;
 
-    public:
-
-    CountdownScene(SkirmishUI *ui);
+   public:
+    CountdownScene(SkirmishUI* ui);
 
     void onSet(uint8_t id);
     bool update();
     void render();
-
 };

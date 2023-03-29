@@ -6,19 +6,18 @@ Skirmish Communication
 Copyright (C) 2023 Ole Lange
 */
 
-#include <inc/log.h>
-#include <inc/skirmcom.h>
+#include <ArduinoJson.h>
 #include <inc/bluetooth.h>
 #include <inc/const.h>
-#include <inc/ui.h>
-#include <inc/time.h>
 #include <inc/hardware_control.h>
-
-#include <ArduinoJson.h>
+#include <inc/log.h>
+#include <inc/skirmcom.h>
+#include <inc/time.h>
+#include <inc/ui.h>
 
 /**
  * Constructor
-*/
+ */
 SkirmCom::SkirmCom(SkirmishBluetooth *bleDriver, Game *game, SkirmishUI *ui) {
     logDebug("Init: SkirmCom");
 
@@ -28,8 +27,8 @@ SkirmCom::SkirmCom(SkirmishBluetooth *bleDriver, Game *game, SkirmishUI *ui) {
 }
 
 /**
- * 
-*/
+ *
+ */
 void SkirmCom::init() {
     this->bleDriver->setOnReceiveCallback(SkirmCom::onReceiveCallback);
     this->bleDriver->setOnConnectCallback(SkirmCom::onConnectCallback);
@@ -42,29 +41,27 @@ void SkirmCom::init() {
 /**
  * Class Member function that is called by the static onReceiveCallback function
  * to handle the received data
- * 
+ *
  * @param data the received data
-*/
+ */
 void SkirmCom::onReceive(DynamicJsonDocument *data) {
     // Data must contain a field "a" containing a list of actions, else it's
     // invalid and will not be handled. "a" may be an empty list.
-    if (! data->containsKey("a")) {
+    if (!data->containsKey("a")) {
         return;
     }
     JsonObject root = data->as<JsonObject>();
 
     bool debugPrintJson = true;
 
-
     // Updating PGT data
     game->updatePGTData(&root);
 
     // Iterating over the "a" array and executing all actions
-    for(int action : root["a"].as<JsonArray>()) {
-        if (action != 0) { // Prevent spamming keep-alive actions on the log
+    for (int action : root["a"].as<JsonArray>()) {
+        if (action != 0) {  // Prevent spamming keep-alive actions on the log
             logDebug("Action %d:", action);
-        }
-        else {
+        } else {
             debugPrintJson = false;
         }
 
@@ -131,13 +128,12 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
 
 /**
  * Member function that is called by the onConnectCallback function
-*/
-void SkirmCom::onConnect() {
-}
+ */
+void SkirmCom::onConnect() {}
 
 /**
  * Member function that is called by the onDisconnectCallback function
-*/
+ */
 void SkirmCom::onDisconnect() {
     // Resetting game on disconnect
     game->reset();
@@ -147,34 +143,34 @@ void SkirmCom::onDisconnect() {
  * onReceive callback for the bluetooth driver. Is called everytime the
  * modem (smartphone app) writes data to the specific characteristic and
  * notifies about the new data.
- * 
+ *
  * @param data pointer to the received data
-*/
-void SkirmCom::onReceiveCallback(void * context, DynamicJsonDocument *data) {
-    reinterpret_cast<SkirmCom*>(context)->onReceive(data);
+ */
+void SkirmCom::onReceiveCallback(void *context, DynamicJsonDocument *data) {
+    reinterpret_cast<SkirmCom *>(context)->onReceive(data);
 }
 
 /**
  * onConnect callback for the bluetooth driver. Is called when the
  * modem connects to the device.
-*/
-void SkirmCom::onConnectCallback(void * context) {
-    reinterpret_cast<SkirmCom*>(context)->onConnect();
+ */
+void SkirmCom::onConnectCallback(void *context) {
+    reinterpret_cast<SkirmCom *>(context)->onConnect();
 }
 
 /**
  * onDisconnect callback for the bluetooth driver. Is called when the
  * modem is disconnected from the device.
-*/
-void SkirmCom::onDisconnectCallback(void * context) {
-    reinterpret_cast<SkirmCom*>(context)->onDisconnect();
+ */
+void SkirmCom::onDisconnectCallback(void *context) {
+    reinterpret_cast<SkirmCom *>(context)->onDisconnect();
 }
 
 /**
  * This method tells the server that a shot was fired
- * 
+ *
  * @param sid Shot ID
-*/
+ */
 void SkirmCom::shotFired(uint16_t sid) {
     // Clearing current data
     jsonOutDocument->clear();
@@ -193,10 +189,10 @@ void SkirmCom::shotFired(uint16_t sid) {
 
 /**
  * This method tells the server that a shot was received
- * 
+ *
  * @param pid The received Player ID
  * @param sid The received Shot ID
-*/
+ */
 void SkirmCom::gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation) {
     // Clear current data
     jsonOutDocument->clear();
@@ -205,13 +201,12 @@ void SkirmCom::gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation) {
     /*
     { "a": [ACTION_GOT_HIT], "pid": pid, "sid": sid, "hp": hitLocation}
     */
-   JsonArray actions = jsonOutDocument->createNestedArray("a");
-   actions.add(ACTION_GOT_HIT);
-   jsonOutDocument->operator[]("pid") = pid;
-   jsonOutDocument->operator[]("sid") = sid;
-   jsonOutDocument->operator[]("hp") = hitLocation;
+    JsonArray actions = jsonOutDocument->createNestedArray("a");
+    actions.add(ACTION_GOT_HIT);
+    jsonOutDocument->operator[]("pid") = pid;
+    jsonOutDocument->operator[]("sid") = sid;
+    jsonOutDocument->operator[]("hp") = hitLocation;
 
-
-   // Sending data
-   bleDriver->writeJsonData(jsonOutDocument);
+    // Sending data
+    bleDriver->writeJsonData(jsonOutDocument);
 }

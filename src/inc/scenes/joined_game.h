@@ -11,12 +11,10 @@ Copyright (C) 2023 Ole Lange
 #include <inc/scenes/scene.h>
 
 class JoinedGameScene : public SkirmishUIScene {
-    public:
-
+   public:
     JoinedGameScene(SkirmishUI *ui);
 
     void onSet(uint8_t id);
     bool update();
     void render();
-
 };

@@ -10,11 +10,10 @@ Copyright (C) 2023 Ole Lange
 
 #include <Arduino.h>
 
-
 // I2C Commands
-#define HP_CMD_SELECT_ANIM    0x01
+#define HP_CMD_SELECT_ANIM 0x01
 #define HP_CMD_SET_ANIM_SPEED 0x02
-#define HP_CMD_SET_COLOR      0x03
+#define HP_CMD_SET_COLOR 0x03
 
 void hitpointInit();
 

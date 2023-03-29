@@ -10,4 +10,4 @@ Copyright (C) 2023 Ole Lange
 
 void audioInit(float gain);
 void audioBegin(const char* filename);
-void audioLoopTask(void *param);
+void audioLoopTask(void* param);

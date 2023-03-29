@@ -1,4 +1,4 @@
- /*
+/*
 Skirmish ESP32 Firmware
 
 User Interface - Splashscreen scene
@@ -6,35 +6,32 @@ User Interface - Splashscreen scene
 Copyright (C) 2023 Ole Lange
 */
 
-
-#include <inc/scenes/splash.h>
-#include <theme.h>
+#include <conf.h>
 #include <inc/const.h>
 #include <inc/hitpoint.h>
-#include <conf.h>
-
+#include <inc/scenes/splash.h>
 #include <qrcode.h>
+#include <theme.h>
 
 /**
  * Constructor of the scene. Sets the ID
-*/
+ */
 SplashscreenScene::SplashscreenScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
     this->id = SCENE_SPLASHSCREEN;
 
-    splashText = (char*) malloc(32 * sizeof(char));
+    splashText = (char *)malloc(32 * sizeof(char));
 
-    qrBytes = (uint8_t*) malloc(qrcode_getBufferSize(3) * sizeof(uint8_t));
+    qrBytes = (uint8_t *)malloc(qrcode_getBufferSize(3) * sizeof(uint8_t));
 }
 
 /**
  * Is called when the scene is set
-*/
+ */
 void SplashscreenScene::onSet(uint8_t id) {
     this->id = id;
     if (id == SCENE_SPLASHSCREEN) {
         strcpy(splashText, "Loading...");
-    }
-    else if (id == SCENE_BLE_CONNECT) {
+    } else if (id == SCENE_BLE_CONNECT) {
         strcpy(splashText, "Waiting for connection...");
 
         // Setting hitpoints to breathe animation
@@ -46,31 +43,27 @@ void SplashscreenScene::onSet(uint8_t id) {
 
         // Generating QR Code
         qrcode_initText(&nameQR, qrBytes, 3, ECC_LOW, ui->bluetooth->getName());
-    }
-    else if (id == SCENE_NO_GAME) {
+    } else if (id == SCENE_NO_GAME) {
         strcpy(splashText, "Please join a game!");
 
         // turn off leds
         hitpointSelectAnimation(HP_ANIM_SOLID);
         hitpointSetColor(0, 0, 0);
-    }
-    else {
+    } else {
         strcpy(splashText, "<INVALID SCENE>");
     }
 }
 
 /**
  * Updates the splashscreen scene
-*/
-bool SplashscreenScene::update() {
-    return false;
-}
+ */
+bool SplashscreenScene::update() { return false; }
 
 /**
  * Renders the scene
-*/
+ */
 void SplashscreenScene::render() {
-    #ifndef NO_DISPLAY
+#ifndef NO_DISPLAY
     ui->display->setFont(SDT_HEADER_FONT);
 
     uint8_t base_y = 140;
@@ -85,16 +78,20 @@ void SplashscreenScene::render() {
 
     // Render a qr code to the connect scene
     if (id == SCENE_BLE_CONNECT) {
-        uint8_t pos_x = 120 - (nameQR.size*5)/2;
+        uint8_t pos_x = 120 - (nameQR.size * 5) / 2;
         for (uint8_t y = 0; y < nameQR.size; y++) {
             for (uint8_t x = 0; x < nameQR.size; x++) {
                 if (qrcode_getModule(&nameQR, x, y)) {
-                    ui->display->tft.fillRect(pos_x + (x*5), base_y + 75 + (y*5), 5, 5, ui->display->gammaCorrection(SDT_TEXT_COLOR));
+                    ui->display->tft.fillRect(
+                        pos_x + (x * 5), base_y + 75 + (y * 5), 5, 5,
+                        ui->display->gammaCorrection(SDT_TEXT_COLOR));
                 } else {
-                    ui->display->tft.fillRect(pos_x + (x*5), base_y + 75 + (y*5), 5, 5, ui->display->gammaCorrection(SDT_BG_COLOR));
+                    ui->display->tft.fillRect(
+                        pos_x + (x * 5), base_y + 75 + (y * 5), 5, 5,
+                        ui->display->gammaCorrection(SDT_BG_COLOR));
                 }
             }
         }
     }
-    #endif
+#endif
 }
