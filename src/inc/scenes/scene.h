@@ -1,4 +1,4 @@
- /*
+/*
 Skirmish ESP32 Firmware
 
 Scene base class
@@ -13,19 +13,19 @@ Copyright (C) 2023 Ole Lange
 /**
  * Classes inherited from this class are drawing the
  * scenes
-*/
+ */
 class SkirmishUIScene {
-    protected:
-        uint8_t id;
+   protected:
+    uint8_t id;
 
-    public:
-        SkirmishUIScene(SkirmishUI *ui);
+   public:
+    SkirmishUIScene(SkirmishUI *ui);
 
-        uint8_t getID();
+    uint8_t getID();
 
-        SkirmishUI *ui;
+    SkirmishUI *ui;
 
-        virtual void onSet(uint8_t id);
-        virtual bool update();
-        virtual void render();
+    virtual void onSet(uint8_t id);
+    virtual bool update();
+    virtual void render();
 };

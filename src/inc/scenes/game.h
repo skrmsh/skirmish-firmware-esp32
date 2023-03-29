@@ -11,8 +11,7 @@ Copyright (C) 2023 Ole Lange
 #include <inc/scenes/scene.h>
 
 class GameScene : public SkirmishUIScene {
-    public:
-
+   public:
     GameScene(SkirmishUI *ui);
 
     void onSet(uint8_t id);
@@ -24,5 +23,4 @@ class GameScene : public SkirmishUIScene {
 
     bool prevCanFire = false;
     bool canFire = false;
-
 };

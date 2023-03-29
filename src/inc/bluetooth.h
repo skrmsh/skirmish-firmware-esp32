@@ -8,47 +8,45 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <BLEDevice.h>
-#include <BLEUtils.h>
-#include <BLEServer.h>
-
 #include <ArduinoJson.h>
-
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
 
 class SkirmishBluetooth {
+   private:
+    BLECharacteristic *writeCharacteristic;
+    BLECharacteristic *readCharacteristic;
+    BLECharacteristic *imageCharacteristic;
 
-    private:
-        BLECharacteristic *writeCharacteristic;
-        BLECharacteristic *readCharacteristic;
-        BLECharacteristic *imageCharacteristic;
+    BLEServer *server;
 
-        BLEServer *server;
+    char *bluetoothName;
+    bool isConnected = false;
 
-        char* bluetoothName;
-        bool isConnected = false;
+    char dataBuffer[512];
 
-        char dataBuffer[512];
+   public:
+    SkirmishBluetooth();
+    void init();
 
-    public:
-        SkirmishBluetooth();
-        void init();
+    void setCom(void *com);
 
-        void setCom(void *com);
+    void startAdvertising();
 
-        void startAdvertising();
+    bool getConnectionState();
+    void setConnectionState(bool newState);
 
-        bool getConnectionState();
-        void setConnectionState(bool newState);
+    char *getName();
+    void writeJsonData(DynamicJsonDocument *data);
 
-        char* getName();
-        void writeJsonData(DynamicJsonDocument *data);
+    void *com;
+    void (*onReceiveCallback)(void *context, DynamicJsonDocument *);
+    void setOnReceiveCallback(void (*callback)(void *context,
+                                               DynamicJsonDocument *));
 
-        void *com;
-        void (*onReceiveCallback)(void *context, DynamicJsonDocument *);
-        void setOnReceiveCallback(void(* callback)(void *context, DynamicJsonDocument*));
-
-        void (*onConnectCallback)(void *context);
-        void setOnConnectCallback(void(* callback)(void *context));
-        void (*onDisconnectCallback)(void *context);
-        void setOnDisconnectCallback(void(* callback)(void *context));
+    void (*onConnectCallback)(void *context);
+    void setOnConnectCallback(void (*callback)(void *context));
+    void (*onDisconnectCallback)(void *context);
+    void setOnDisconnectCallback(void (*callback)(void *context));
 };

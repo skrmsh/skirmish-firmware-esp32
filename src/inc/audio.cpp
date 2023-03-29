@@ -6,11 +6,10 @@ Audio driver
 Copyright (C) 2023 Ole Lange
 */
 
-#include <inc/log.h>
-#include <inc/audio.h>
-#include <conf.h>
-
 #include <SPIFFS.h>
+#include <conf.h>
+#include <inc/audio.h>
+#include <inc/log.h>
 
 #include "AudioFileSourceSPIFFS.h"
 #include "AudioGeneratorWAV.h"
@@ -24,9 +23,9 @@ bool isPlaying = false;
 
 /**
  * Initializes the audio driver
- * 
+ *
  * @param gain audio gain [0-1]
-*/
+ */
 void audioInit(float gain) {
     logInfo("Init: Audio");
 
@@ -40,15 +39,14 @@ void audioInit(float gain) {
     out->SetGain(gain);
 
     logDebug("-> Audio Init done");
-
 }
 
 /**
  * Begins playing the specified audio file
- * 
+ *
  * @param filename spiffs path of the audio file
-*/
-void audioBegin(const char* filename) {
+ */
+void audioBegin(const char *filename) {
     if (isPlaying) {
         wav->stop();
         isPlaying = false;
@@ -60,7 +58,7 @@ void audioBegin(const char* filename) {
 
 /**
  * Keeps the current audio file playing.
-*/
+ */
 void audioLoopTask(void *param) {
     while (1) {
         if (!isPlaying) continue;
@@ -70,6 +68,6 @@ void audioLoopTask(void *param) {
             continue;
         }
 
-        if(!wav->loop()) wav->stop();
+        if (!wav->loop()) wav->stop();
     }
 }
