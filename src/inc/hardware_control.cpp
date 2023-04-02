@@ -69,21 +69,19 @@ void hardwarePowerOff() {
 /**
  * Reads the battery voltage from the PIN_VBAT_MEASURE.
  * If the result of this function isn't accurate, please calibrate
- * the ADC_VREF value in conf.h
+ * the ADC_AT_ values in conf.h
  *
  * @return The battery voltage in millivolts
  */
 uint16_t hardwareReadVBAT() {
     // Read the value on the adc pin
-    uint16_t analogReadValue = analogRead(PIN_VBAT_MEASURE);
-    // Convert it to a voltage on the pin
-    float pinVoltage =
-        (analogReadValue / (float)pow(2, adcResolution)) * (ADC_VREF);
-    // Calculate the voltage before the resisitor divider which is vbat
-    float batteryVoltage =
-        (VBAT_RHI * pinVoltage + VBAT_RLO * pinVoltage) / VBAT_RLO;
+    uint16_t adc = analogRead(PIN_VBAT_MEASURE);
+    
+    float ux =
+        3000 +
+        (((adc - ADC_AT_3000mV) / (ADC_AT_4200mV - ADC_AT_3000mV)) * 1200);
 
-    return batteryVoltage;
+    return ux;
 }
 
 /**
