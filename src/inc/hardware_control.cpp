@@ -27,6 +27,11 @@ uint16_t lipoCurve[100] = {
     4078, 4085, 4091, 4097, 4103, 4109, 4117, 4125, 4133, 4141, 4149, 4159,
     4169, 4179, 4189, 4200};
 
+// Ring buffer for adc
+uint16_t *vbatValues;
+uint8_t vbatBufferIdx = 0;
+uint32_t vbatLastMeasurement;
+
 // Until which millis() value the vibration motor should
 // be turned on
 uint32_t vibrateUntil = 0;
@@ -74,8 +79,21 @@ void hardwarePowerOff() {
  * @return The battery voltage in millivolts
  */
 uint16_t hardwareReadVBAT() {
+    vbatLastMeasurement = millis();
+
     // Read the value on the adc pin
-    uint16_t adc = analogRead(PIN_VBAT_MEASURE);
+    uint16_t adcRaw = analogRead(PIN_VBAT_MEASURE);
+
+    vbatValues[vbatBufferIdx] = adcRaw;
+    vbatBufferIdx += 1;
+    if (vbatBufferIdx >= VBAT_SAMPLE_COUNT) vbatBufferIdx = 0;
+
+    uint32_t adcBuffered = 0;
+    for (uint8_t i = 0; i < VBAT_SAMPLE_COUNT; i ++) {
+        adcBuffered += vbatValues[i];
+    }
+
+    float adc = adcBuffered / (float)VBAT_SAMPLE_COUNT;
     
     float ux =
         3000 +
@@ -89,6 +107,7 @@ uint16_t hardwareReadVBAT() {
  */
 float hardwareBatteryPercent() {
     uint16_t vbat = hardwareReadVBAT();
+    logDebug("VBat: %4dmV", vbat);
     for (uint8_t i = 99; i >= 0; i--) {
         if (vbat >= lipoCurve[i]) return (i + 1) / 100.0;
     }
@@ -114,13 +133,20 @@ void hardwareVibrate(uint16_t duration) {
  * Hardware Loop function. Call periodically!
  */
 void hardwareLoop() {
-// If enabled turn off the vibration motor
+    uint32_t now = millis();
+
+    // If enabled turn off the vibration motor
 #ifndef NO_VIBR_MOTOR
-    if (vibrateUntil > 0 && millis() >= vibrateUntil) {
+    if (vibrateUntil > 0 && now >= vibrateUntil) {
         digitalWrite(PIN_VIBR_MOTOR, LOW);
         vibrateUntil = 0;
     }
 #endif
+
+    // Measure battery at least every 100ms
+    if (now - vbatLastMeasurement > 100) {
+        hardwareReadVBAT();
+    }
 }
 
 /**
@@ -149,6 +175,14 @@ void hardwareInit() {
     // Configure ADC
     analogReadResolution(adcResolution);
     analogSetAttenuation(ADC_2_5db);
+
+    // Setting up vbat ring buffer and filling it
+
+    vbatValues = (uint16_t*) malloc(VBAT_SAMPLE_COUNT * sizeof(uint16_t));
+
+    for (uint8_t i = 0; i < VBAT_SAMPLE_COUNT; i ++) {
+        hardwareReadVBAT();
+    }
 
 // Attaching an interrupt to the trigger pin
 #ifndef NO_PHASER
