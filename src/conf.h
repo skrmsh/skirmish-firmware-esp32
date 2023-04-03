@@ -14,7 +14,7 @@ Copyright (C) 2023 Ole Lange
 // Configuration values:
 
 // Defining the module type, using the same schema as the hitpoint mcfg
-#define MODULE_TYPE MODULE_CHEST
+#define MODULE_TYPE MODULE_PHASER
 
 // Logging
 #define LOG_SERIAL_SPEED 115200
@@ -104,3 +104,6 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 // the battery indicator and other thing fresh the UI is also updated
 // every UI_REFRESH_INTERVAL milliseconds
 #define UI_REFRESH_INTERVAL 15000
+
+// Communication
+#define HW_STATUS_SEND_INTERVAL 1000
