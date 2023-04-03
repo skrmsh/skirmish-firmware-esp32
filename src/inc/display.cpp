@@ -7,8 +7,8 @@ Copyright (C) 2023 Ole Lange
 */
 
 #include <conf.h>
-#include <fonts/theNeueBlack18pt.h>
 #include <inc/display.h>
+#include <fonts/theNeueBlack18pt.h>
 #include <inc/log.h>
 #include <theme.h>
 
