@@ -101,4 +101,4 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 #define UI_REFRESH_INTERVAL 15000
 
 // Communication
-#define HW_STATUS_SEND_INTERVAL 1000
+#define HW_STATUS_SEND_INTERVAL 15000

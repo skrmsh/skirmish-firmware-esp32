@@ -116,6 +116,7 @@ void loop() {
 
     if (mnow - hwStatusLastSend > HW_STATUS_SEND_INTERVAL) {
         com->hwStatus(hardwareBatteryPercent());
+        hwStatusLastSend = mnow;
     }
 
     triggerPressed = hardwareWasTriggerPressed();
