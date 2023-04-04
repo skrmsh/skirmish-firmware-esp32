@@ -98,4 +98,7 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 // The UI is refreshed allways when new data is available but to keep
 // the battery indicator and other thing fresh the UI is also updated
 // every UI_REFRESH_INTERVAL milliseconds
-#define UI_REFRESH_INTERVAL 1500
+#define UI_REFRESH_INTERVAL 15000
+
+// Communication
+#define HW_STATUS_SEND_INTERVAL 15000

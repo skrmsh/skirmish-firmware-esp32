@@ -55,6 +55,7 @@ Copyright (C) 2023 Ole Lange
 #define ACTION_SERVER_JOIN_DENIED 13
 #define ACTION_INVALID_GAME 14
 #define ACTION_POWER_OFF 15
+#define ACTION_HW_STATUS 16
 
 // UI Scenes
 #define SCENE_NO_SCENE 0

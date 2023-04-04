@@ -210,3 +210,25 @@ void SkirmCom::gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation) {
     // Sending data
     bleDriver->writeJsonData(jsonOutDocument);
 }
+
+/**
+ * This method tells the app/server the hardware status of this device
+ * 
+ * @param battery The battery percentage
+*/
+void SkirmCom::hwStatus(float battery) {
+    // Clear current data
+    jsonOutDocument->clear();
+
+    // Generating Json Data
+    /*
+    { "a": [ACTION_HW_STATUS], "battery": battery }
+    */
+   JsonArray actions = jsonOutDocument->createNestedArray("a");
+   actions.add(ACTION_HW_STATUS);
+   jsonOutDocument->operator[]("battery") = battery;
+
+   // Sending data
+   bleDriver->writeJsonData(jsonOutDocument);
+
+}

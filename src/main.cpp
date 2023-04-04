@@ -95,6 +95,8 @@ void setup() {
 #endif
 }
 
+uint32_t hwStatusLastSend = 0;
+
 uint32_t lastFiredShot = 0;
 uint32_t mnow;
 
@@ -111,6 +113,11 @@ void loop() {
     hardwareLoop();
 
     mnow = millis();
+
+    if (mnow - hwStatusLastSend > HW_STATUS_SEND_INTERVAL) {
+        com->hwStatus(hardwareBatteryPercent());
+        hwStatusLastSend = mnow;
+    }
 
     triggerPressed = hardwareWasTriggerPressed();
     hitpointEvent = hitpointEventTriggered();
