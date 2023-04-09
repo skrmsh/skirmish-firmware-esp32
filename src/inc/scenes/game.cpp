@@ -48,16 +48,8 @@ bool GameScene::update() {
 
     // Show msgbox if the player has hit
     if (ui->game->player.hasHit) {
-        hasHitMsgBoxUntil = mnow + 2000;
+        ui->msgBox("Hit!", ui->game->player.hasHitName, 2000);
         ui->game->player.hasHit = false;
-        return true;
-    }
-
-    // Hide hitbox after the specified delay
-    if (mnow > hasHitMsgBoxUntil && hasHitMsgBoxUntil != 0) {
-        hasHitMsgBoxUntil = 0;
-        ui->clearRequired = true;
-        return true;
     }
 
     // Re-Render if the canFire state changed
@@ -126,23 +118,21 @@ void GameScene::render() {
         ui->display->centerText(ui->game->team.name, 100, 1);
     }
 
-    // Drawing player ranking (only if no has hit msg is visible)
-    if (hasHitMsgBoxUntil == 0) {
-        char rankingString[8];
-        sprintf(rankingString, "%d/%d", ui->game->player.rank,
-                ui->game->playerCount);
-        ui->display->setFont(SDT_HEADER_FONT);
-        ui->display->setTextColor(SDT_PRIMARY_COLOR);
-        ui->display->centerText(rankingString, 160, 1, true, SDT_BG_COLOR);
+    // Drawing player ranking
+    char rankingString[8];
+    sprintf(rankingString, "%d/%d", ui->game->player.rank,
+            ui->game->playerCount);
+    ui->display->setFont(SDT_HEADER_FONT);
+    ui->display->setTextColor(SDT_PRIMARY_COLOR);
+    ui->display->centerText(rankingString, 160, 1, true, SDT_BG_COLOR);
 
-        // Drawing team ranking
-        if (ui->game->team.tid != 0) {  // Team ID 0 -> No Team
-            sprintf(rankingString, "%d/%d", ui->game->team.rank,
-                    ui->game->teamCount);
-            ui->display->setFont(SDT_SUBHEADER_FONT);
-            ui->display->setTextColor(SDT_PRIMARY_COLOR);
-            ui->display->centerText(rankingString, 185, 1, true, SDT_BG_COLOR);
-        }
+    // Drawing team ranking
+    if (ui->game->team.tid != 0) {  // Team ID 0 -> No Team
+        sprintf(rankingString, "%d/%d", ui->game->team.rank,
+                ui->game->teamCount);
+        ui->display->setFont(SDT_SUBHEADER_FONT);
+        ui->display->setTextColor(SDT_PRIMARY_COLOR);
+        ui->display->centerText(rankingString, 185, 1, true, SDT_BG_COLOR);
     }
 
     // Clear line with ammo and points display
@@ -247,21 +237,5 @@ void GameScene::render() {
     // TODO
 
     // Drawing msg box showing if you've hit someone
-    if (hasHitMsgBoxUntil > 0) {
-        ui->display->tft.fillRect(35, 100, 170, 80,
-                                  ui->display->gammaCorrection(SDT_BG_COLOR));
-        ui->display->tft.drawRect(
-            35, 100, 170, 80,
-            ui->display->gammaCorrection(SDT_SECONDARY_COLOR));
-
-        // Drawing player name
-        ui->display->setFont(SDT_HEADER_FONT);
-        ui->display->setTextColor(SDT_PRIMARY_COLOR);
-        ui->display->centerText("Hit!", 140, 1);
-
-        ui->display->setFont(SDT_SUBHEADER_FONT);
-        ui->display->setTextColor(SDT_TEXT_COLOR);
-        ui->display->centerText(ui->game->player.hasHitName, 170, 1);
-    }
 #endif
 }

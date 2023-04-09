@@ -76,6 +76,21 @@ void SkirmishUI::setScene(uint8_t scene) {
 }
 
 /**
+ * Starts showing a msgbox
+ *
+ * @param heading Heading text
+ * @param text msg text
+ * @param timeout timeout in milliseconds how long the msgbox should be vis
+ */
+void SkirmishUI::msgBox(char *heading, char *text, uint32_t timeout) {
+    msgBoxHeading = heading;
+    msgBoxText = text;
+    msgBoxVisibleUntil = millis() + timeout;
+    msgBoxVisible = true;
+    setRenderingRequired();
+}
+
+/**
  * Updates the user interface
  */
 void SkirmishUI::update() {
@@ -96,6 +111,12 @@ void SkirmishUI::update() {
     prevBluetoothIsConnected = bluetoothIsConnected;
 
     if (currentScene->update()) {
+        setRenderingRequired();
+    }
+
+    if (millis() > msgBoxVisibleUntil && msgBoxVisible) {
+        msgBoxVisible = false;
+        clearRequired = true;
         setRenderingRequired();
     }
 
@@ -126,6 +147,11 @@ void SkirmishUI::render() {
     renderStatusOverlay();
 #endif
     currentScene->render();
+#ifndef NO_DISPLAY
+    if (msgBoxVisible) {
+        renderMsgBox();
+    }
+#endif
 }
 
 #ifndef NO_DISPLAY
@@ -184,5 +210,25 @@ void SkirmishUI::renderStatusOverlay() {
     // Draw the Horizontal Rule
     display->tft.drawLine(0, 16, 240, 16,
                           display->gammaCorrection(SDT_TEXT_COLOR));
+}
+
+void SkirmishUI::renderMsgBox() {
+    display->tft.fillRect(30, 100, 180, 100,
+                          display->gammaCorrection(SDT_BG_COLOR));
+    display->tft.drawRect(30, 100, 180, 100,
+                          display->gammaCorrection(SDT_SECONDARY_COLOR));
+
+    // Drawing player name
+    if (strlen(msgBoxHeading) > 6) {
+        display->setFont(SDT_SUBHEADER_FONT);
+    } else {
+        display->setFont(SDT_HEADER_FONT);
+    }
+    display->setTextColor(SDT_PRIMARY_COLOR);
+    display->centerText(msgBoxHeading, 140, 1);
+
+    display->setFont(SDT_SUBHEADER_FONT);
+    display->setTextColor(SDT_TEXT_COLOR);
+    display->centerText(msgBoxText, 170, 1);
 }
 #endif
