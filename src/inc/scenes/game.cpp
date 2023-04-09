@@ -49,6 +49,7 @@ bool GameScene::update() {
     // Show msgbox if the player has hit
     if (ui->game->player.hasHit) {
         ui->msgBox("Hit!", ui->game->player.hasHitName, 2000);
+        ui->game->player.hasHit = false;
     }
 
     // Re-Render if the canFire state changed

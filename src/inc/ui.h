@@ -31,9 +31,8 @@ class SkirmishUI {
     uint32_t nextScheduledUpdate = 0;
 
     uint32_t msgBoxVisibleUntil = 0;
-    char* msgBoxText;
-    char* msgBoxHeading;
-    bool msgBoxVisible = false;
+    char *msgBoxText;
+    char *msgBoxHeading;
 
     void renderStatusOverlay();
     void renderMsgBox();
@@ -61,7 +60,8 @@ class SkirmishUI {
     void setRenderingRequired();
     void setScene(uint8_t scene);
 
-    void msgBox(char* heading, char* text, uint32_t timeout);
+    void msgBox(char *heading, char *text, uint32_t timeout);
+    bool msgBoxVisible = false;
 
     void update();
     void render();
