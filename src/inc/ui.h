@@ -30,7 +30,13 @@ class SkirmishUI {
     bool renderRequired = true;
     uint32_t nextScheduledUpdate = 0;
 
+    uint32_t msgBoxVisibleUntil = 0;
+    char* msgBoxText;
+    char* msgBoxHeading;
+    bool msgBoxVisible = false;
+
     void renderStatusOverlay();
+    void renderMsgBox();
 
     bool bluetoothIsConnected;
     bool prevBluetoothIsConnected;
@@ -54,6 +60,8 @@ class SkirmishUI {
 
     void setRenderingRequired();
     void setScene(uint8_t scene);
+
+    void msgBox(char* heading, char* text, uint32_t timeout);
 
     void update();
     void render();
