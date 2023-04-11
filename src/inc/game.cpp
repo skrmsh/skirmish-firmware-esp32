@@ -174,9 +174,9 @@ void Game::updatePGTData(JsonObject *root) {
     if (root->containsKey("g_gid"))
         strcpy(gid, (const char *)root->operator[]("g_gid"));
 
-    P_SET_IF_CONTAINED(playerCount, "g_player_count");
-    P_SET_IF_CONTAINED(teamCount, "g_team_count");
-    P_SET_IF_CONTAINED(startTime, "g_start_time");
+    G_SET_IF_CONTAINED(playerCount, "g_player_count");
+    G_SET_IF_CONTAINED(teamCount, "g_team_count");
+    G_SET_IF_CONTAINED(startTime, "g_start_time");
 
     // Updating Team Data
     T_SET_IF_CONTAINED(team.tid, "t_tid");
@@ -204,8 +204,11 @@ void Game::updatePGTData(JsonObject *root) {
     P_SET_IF_CONTAINED(player.rank, "p_rank");
     P_SET_IF_CONTAINED(player.inviolable, "p_inviolable");
     P_SET_IF_CONTAINED(player.inviolableUntil, "p_inviolable_until");
+    P_SET_IF_CONTAINED(player.inviolableLightsOff, "p_inviolable_lights_off");
 
     afterDataUpdate();
+    player.afterDataUpdate();
+    team.afterDataUpdate();
 }
 
 /**
