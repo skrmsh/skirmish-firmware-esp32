@@ -179,6 +179,10 @@ void Game::updatePGTData(JsonObject *root) {
     G_SET_IF_CONTAINED(startTime, "g_start_time");
 
     // Updating Team Data
+    if (root->containsKey("t_name")) {
+        strcpy(team.name, (const char *)root->operator[]("t_name"));
+        team.dataWasUpdated();
+    }
     T_SET_IF_CONTAINED(team.tid, "t_tid");
     T_SET_IF_CONTAINED(team.playerCount, "t_player_count");
     T_SET_IF_CONTAINED(team.points, "t_points");
