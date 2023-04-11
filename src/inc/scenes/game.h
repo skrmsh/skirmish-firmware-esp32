@@ -22,4 +22,7 @@ class GameScene : public SkirmishUIScene {
 
     bool prevCanFire = false;
     bool canFire = false;
+
+    char *knownTeamName;
+    char *knownPlayerName;
 };

@@ -19,6 +19,9 @@ Copyright (C) 2023 Ole Lange
  */
 GameScene::GameScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
     this->id = SCENE_JOINED_GAME;
+
+    knownPlayerName = (char *)malloc(33 * sizeof(char));
+    knownTeamName = (char *)malloc(33 * sizeof(char));
 }
 
 /**
@@ -64,6 +67,16 @@ bool GameScene::update() {
         ui->game->wasDataUpdated = false;
         ui->game->player.wasDataUpdated = false;
         ui->game->team.wasDataUpdated = false;
+
+        if (strcmp(knownPlayerName, ui->game->player.name) != 0) {
+            strcpy(knownPlayerName, ui->game->player.name);
+            ui->clearRequired = true;
+        }
+
+        if (strcmp(knownTeamName, ui->game->team.name) != 0) {
+            strcpy(knownTeamName, ui->game->team.name);
+            ui->clearRequired = true;
+        }
 
         return true;
     }
