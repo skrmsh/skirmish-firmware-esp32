@@ -29,12 +29,12 @@ Copyright (C) 2023 Ole Lange
 /**
  * Le constructeur
  */
-Team::Team() {}
+Team::Team() { name = (char *)malloc(33 * sizeof(char)); }
 
 /**
  * Reset the team data
  */
-void Team::reset() {}
+void Team::reset() { strcpy(name, ""); }
 
 /**
  * Function that is called when a field is changed while data update
@@ -171,44 +171,44 @@ void Game::afterDataUpdate() {
  */
 void Game::updatePGTData(JsonObject *root) {
     // Updating Game Data
-    if (root->containsKey("g_gid"))
-        strcpy(gid, (const char *)root->operator[]("g_gid"));
+    if (root->containsKey("g_id"))
+        strcpy(gid, (const char *)root->operator[]("g_id"));
 
-    G_SET_IF_CONTAINED(playerCount, "g_player_count");
-    G_SET_IF_CONTAINED(teamCount, "g_team_count");
-    G_SET_IF_CONTAINED(startTime, "g_start_time");
+    G_SET_IF_CONTAINED(playerCount, "g_pc");
+    G_SET_IF_CONTAINED(teamCount, "g_tc");
+    G_SET_IF_CONTAINED(startTime, "g_st");
 
     // Updating Team Data
-    if (root->containsKey("t_name")) {
-        strcpy(team.name, (const char *)root->operator[]("t_name"));
+    if (root->containsKey("t_n")) {
+        strcpy(team.name, (const char *)root->operator[]("t_n"));
         team.dataWasUpdated();
     }
-    T_SET_IF_CONTAINED(team.tid, "t_tid");
-    T_SET_IF_CONTAINED(team.playerCount, "t_player_count");
-    T_SET_IF_CONTAINED(team.points, "t_points");
-    T_SET_IF_CONTAINED(team.rank, "t_rank");
+    T_SET_IF_CONTAINED(team.tid, "t_id");
+    T_SET_IF_CONTAINED(team.playerCount, "t_pc");
+    T_SET_IF_CONTAINED(team.points, "t_p");
+    T_SET_IF_CONTAINED(team.rank, "t_r");
 
     // Updating Player Data
-    if (root->containsKey("p_name")) {
-        strcpy(player.name, (const char *)root->operator[]("p_name"));
+    if (root->containsKey("p_n")) {
+        strcpy(player.name, (const char *)root->operator[]("p_n"));
         player.dataWasUpdated();
     }
-    P_SET_IF_CONTAINED(player.pid, "p_pid");
-    P_SET_IF_CONTAINED(player.health, "p_health");
-    P_SET_IF_CONTAINED(player.points, "p_points");
-    P_SET_IF_CONTAINED(player.color_r, "p_color_r");
-    P_SET_IF_CONTAINED(player.color_g, "p_color_g");
-    P_SET_IF_CONTAINED(player.color_b, "p_color_b");
-    P_SET_IF_CONTAINED(player.colorBeforeGame, "p_color_before_game");
-    P_SET_IF_CONTAINED(player.ammoLimit, "p_ammo_limit");
-    P_SET_IF_CONTAINED(player.ammo, "p_ammo");
-    P_SET_IF_CONTAINED(player.phaserEnable, "p_phaser_enable");
-    P_SET_IF_CONTAINED(player.phaserDisableUntil, "p_phaser_disable_until");
-    P_SET_IF_CONTAINED(player.maxShotInterval, "p_max_shot_interval");
-    P_SET_IF_CONTAINED(player.rank, "p_rank");
-    P_SET_IF_CONTAINED(player.inviolable, "p_inviolable");
-    P_SET_IF_CONTAINED(player.inviolableUntil, "p_inviolable_until");
-    P_SET_IF_CONTAINED(player.inviolableLightsOff, "p_inviolable_lights_off");
+    P_SET_IF_CONTAINED(player.pid, "p_id");
+    P_SET_IF_CONTAINED(player.health, "p_h");
+    P_SET_IF_CONTAINED(player.points, "p_p");
+    P_SET_IF_CONTAINED(player.color_r, "p_cr");
+    P_SET_IF_CONTAINED(player.color_g, "p_cg");
+    P_SET_IF_CONTAINED(player.color_b, "p_cb");
+    P_SET_IF_CONTAINED(player.colorBeforeGame, "p_cbg");
+    P_SET_IF_CONTAINED(player.ammoLimit, "p_al");
+    P_SET_IF_CONTAINED(player.ammo, "p_a");
+    P_SET_IF_CONTAINED(player.phaserEnable, "p_pe");
+    P_SET_IF_CONTAINED(player.phaserDisableUntil, "p_pdu");
+    P_SET_IF_CONTAINED(player.maxShotInterval, "p_msi");
+    P_SET_IF_CONTAINED(player.rank, "p_r");
+    P_SET_IF_CONTAINED(player.inviolable, "p_i");
+    P_SET_IF_CONTAINED(player.inviolableUntil, "p_iu");
+    P_SET_IF_CONTAINED(player.inviolableLightsOff, "p_ilo");
 
     afterDataUpdate();
     player.afterDataUpdate();
