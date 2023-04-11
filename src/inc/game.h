@@ -33,6 +33,7 @@ class Player {
     uint8_t rank;
     bool inviolable;
     uint32_t inviolableUntil;
+    bool inviolableLightsOff;
 
     bool wasHit = false;
     char* wasHitBy;

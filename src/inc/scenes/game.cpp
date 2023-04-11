@@ -87,7 +87,8 @@ void GameScene::render() {
         hitpointSetAnimationSpeed(15);
         hitpointSetColor(255, 255, 255);
     } else {
-        if (!ui->game->player.isInviolable()) {
+        if (!ui->game->player.isInviolable() ||
+            !ui->game->player.inviolableLightsOff) {
             hitpointSelectAnimation(HP_ANIM_SOLID);
             hitpointSetColor(player_r, player_g, player_b);
         } else {
