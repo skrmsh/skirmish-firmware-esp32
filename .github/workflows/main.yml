@@ -39,7 +39,7 @@ jobs:
       - name: Archive spiffs image artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ESP32 SPIFFS Image (Phaser/Vest)
+          name: ESP32 SPIFFS Image (Phaser + Vest)
           path: .pio/build/esp32dev/spiffs.bin
 
       - name: Change configuration to chest
