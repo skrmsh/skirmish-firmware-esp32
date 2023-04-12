@@ -27,11 +27,20 @@ jobs:
       - name: Build PlatformIO Project (Phaser)
         run: pio run
 
+      - name: Build spiffs image
+        run: pio run --target buildfs --environment esp32dev
+
       - name: Archive firmware artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ESP32 Firmware (Phaser)
           path: .pio/build/esp32dev/firmware.bin
+
+      - name: Archive spiffs image artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ESP32 SPIFFS Image (Phaser/Vest)
+          path: .pio/build/esp32dev/spiffs.bin
 
       - name: Change configuration to chest
         run: sed -i "s/define MODULE_TYPE MODULE_PHASER/define MODULE_TYPE MODULE_CHEST/" src/conf.h
