@@ -184,6 +184,9 @@ bool SkirmishBluetooth::getConnectionState() { return isConnected; }
  * @param newState new connection state
  */
 void SkirmishBluetooth::setConnectionState(bool newState) {
+    if (isConnected && !newState) {  // Disconnected
+        lastDisconnectedTime = millis();
+    }
     isConnected = newState;
 }
 
