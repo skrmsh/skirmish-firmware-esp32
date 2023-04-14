@@ -61,12 +61,16 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 #define NO_VIBR_MOTOR
 #endif
 
+// Power Management
 // Battery voltage is measured with a voltage divider between vbat and gnd
 // the most accurate way of calculating the voltage of the battery is simply
 // by measuring adc values @3.0 and 4.2 volts and interpolating the other values
 #define VBAT_SAMPLE_COUNT 100
 #define ADC_AT_4200mV 2690.0
 #define ADC_AT_3000mV 1910.0
+
+// Time after which the phaser is turned off when not connected via BLE
+#define NOT_CONNECTED_POWER_OFF_TIMEOUT 5
 
 // Display
 #define DISPLAY_ROTATION 2  // -> Portrait with connector on the top side

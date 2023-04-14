@@ -37,6 +37,8 @@ class SkirmishBluetooth {
     bool getConnectionState();
     void setConnectionState(bool newState);
 
+    uint32_t lastDisconnectedTime = 0;
+
     char *getName();
     void writeJsonData(DynamicJsonDocument *data);
 
