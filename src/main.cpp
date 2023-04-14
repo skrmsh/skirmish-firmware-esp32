@@ -119,6 +119,13 @@ void loop() {
         hwStatusLastSend = mnow;
     }
 
+    // Turn of the phaser if it was not connected for a while
+    if (mnow - bluetoothDriver->lastDisconnectedTime >
+            (NOT_CONNECTED_POWER_OFF_TIMEOUT * 60000) &&
+        !bluetoothDriver->getConnectionState()) {
+        hardwarePowerOff();
+    }
+
     triggerPressed = hardwareWasTriggerPressed();
     hitpointEvent = hitpointEventTriggered();
 
