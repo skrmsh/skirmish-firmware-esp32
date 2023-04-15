@@ -20,7 +20,7 @@ Copyright (C) 2023 Ole Lange
 CountdownScene::CountdownScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
     this->id = SCENE_JOINED_GAME;
     countdown = (char *)malloc(3 * sizeof(char));
-    strcpy(countdown, "XX");
+    strcpy(countdown, "  ");
 }
 
 /**
