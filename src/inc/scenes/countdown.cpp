@@ -7,7 +7,9 @@ Copyright (C) 2023 Ole Lange
 */
 
 #include <conf.h>
+#include <inc/audio.h>
 #include <inc/const.h>
+#include <inc/hardware_control.h>
 #include <inc/hitpoint.h>
 #include <inc/log.h>
 #include <inc/scenes/countdown.h>
@@ -20,7 +22,7 @@ Copyright (C) 2023 Ole Lange
 CountdownScene::CountdownScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
     this->id = SCENE_JOINED_GAME;
     countdown = (char *)malloc(3 * sizeof(char));
-    strcpy(countdown, "XX");
+    strcpy(countdown, "  ");
 }
 
 /**
@@ -37,11 +39,23 @@ bool CountdownScene::update() {
         prevSecLeft = secLeft;
         sprintf(countdown, "%d", secLeft);
 
+        if (secLeft == 3) {
+            audioBegin("/three.wav");
+        } else if (secLeft == 2) {
+            audioBegin("/two.wav");
+        } else if (secLeft == 1) {
+            audioBegin("/one.wav");
+        } else if (secLeft == 0) {
+            audioBegin("/fight.wav");
+        }
+        hardwareVibrate(150);
+
         return true;  // render if countdown has changed
     }
 
     // if the countdown is finished change to the game scene
     if (secLeft == 0) {
+        hardwareVibrate(300);
         ui->setScene(SCENE_GAME);
         return false;
     }
