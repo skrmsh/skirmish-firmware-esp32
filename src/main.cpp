@@ -24,6 +24,7 @@ Copyright (C) 2023 Ole Lange
 #ifndef NO_PHASER
 #include <inc/infrared.h>
 #endif
+#include <inc/hpnow.h>
 
 TaskHandle_t audioTaskHandle;
 
@@ -37,6 +38,17 @@ SkirmishDisplay display = SkirmishDisplay();
 SkirmishUI *userInterface;
 
 bool previousConnectionState = false;
+
+void handleHPNowData(const uint8_t *data) {
+    uint8_t cmd = data[0];
+    uint8_t mode = data[1];
+
+    if (cmd == 0x03) {
+        uint8_t rpid = data[2];
+        uint16_t rsid = data[3] | (data[4] << 8);
+        logInfo("Hitpoint was hit by %d (%d)", rpid, rsid);
+    }
+}
 
 void setup() {
     // Wait some time for the hitpoints to init
@@ -63,7 +75,8 @@ void setup() {
 // the audio gain will be set to 0 -> silence
 #ifndef NO_AUDIO
     float audioGain = 0.6;
-    if (digitalRead(PIN_PWR_OFF)) audioGain = 0;
+    if (digitalRead(PIN_PWR_OFF))
+        audioGain = 0;
     audioInit(audioGain);
 
     // Creating audio task and pinning it to core 0
@@ -87,6 +100,9 @@ void setup() {
 
     bluetoothDriver->init();
     userInterface->setScene(SCENE_BLE_CONNECT);
+
+    hpnowInit(&handleHPNowData);
+    hpnowSysInit(0, 0, 0, 255);
 
     logInfo("Current Battery Voltage is %d", hardwareReadVBAT());
 
@@ -158,7 +174,7 @@ void loop() {
             logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot,
                      hitLocation);
 
-            if (lastReceivedShot != 0) {  // Shot really contains data
+            if (lastReceivedShot != 0) { // Shot really contains data
                 pid = getPIDFromShot(lastReceivedShot);
                 sid = getSIDFromShot(lastReceivedShot);
 
