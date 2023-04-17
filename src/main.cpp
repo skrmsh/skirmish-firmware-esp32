@@ -39,17 +39,6 @@ SkirmishUI *userInterface;
 
 bool previousConnectionState = false;
 
-void handleHPNowData(const uint8_t *data) {
-    uint8_t cmd = data[0];
-    uint8_t mode = data[1];
-
-    if (cmd == 0x03) {
-        uint8_t rpid = data[2];
-        uint16_t rsid = data[3] | (data[4] << 8);
-        logInfo("Hitpoint was hit by %d (%d)", rpid, rsid);
-    }
-}
-
 void setup() {
     // Wait some time for the hitpoints to init
     delay(250);
@@ -101,7 +90,7 @@ void setup() {
     bluetoothDriver->init();
     userInterface->setScene(SCENE_BLE_CONNECT);
 
-    hpnowInit(&handleHPNowData);
+    hpnowInit();
     hpnowSysInit(0, 0, 0, 255);
 
     logInfo("Current Battery Voltage is %d", hardwareReadVBAT());
@@ -124,6 +113,7 @@ uint8_t hitLocation;
 
 bool triggerPressed = false;
 bool hitpointEvent = false;
+bool hpnowGotHitEvent = false;
 
 void loop() {
     hardwareLoop();
@@ -144,6 +134,7 @@ void loop() {
 
     triggerPressed = hardwareWasTriggerPressed();
     hitpointEvent = hitpointEventTriggered();
+    hpnowGotHitEvent = hpnowGotHit();
 
     if (game->isRunning()) {
 #ifndef NO_PHASER
@@ -184,6 +175,10 @@ void loop() {
                     com->gotHit(pid, sid, hitLocation);
                 }
             }
+        }
+
+        if (hpnowGotHitEvent) {
+            // com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(), hpnowGotHitSID());
         }
     }
 

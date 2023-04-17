@@ -16,8 +16,18 @@ Copyright (C) 2023 Ole Lange
 #include <inc/log.h>
 
 esp_now_peer_info_t broadcastReceiver;
-void (*handlerCallback)(const uint8_t *data);
 
+bool receivedGotHit = false;
+uint8_t gotHitHPMode = 0;
+uint8_t gotHitPID = 0;
+uint16_t gotHitSID = 0;
+
+/**
+ * Initialises the ESPNOW driver.
+ * If it fails it tries again a second time if (isRetry is false).
+ *
+ * @param isRetry - doesnt retry again if it's already a retry
+ */
 void initESPNow(bool isRetry) {
     if (esp_now_init() == ESP_OK) {
         logInfo("-> ESPNOW Initialised!");
@@ -33,6 +43,9 @@ void initESPNow(bool isRetry) {
     }
 }
 
+/**
+ * Callback for new received ESPNOW data.
+ */
 void onReceive(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
     if (data_len == 6) {
         char macStr[18];
@@ -44,14 +57,54 @@ void onReceive(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
 
         logDebug("Received %s from %s", dataStr, macStr);
 
-        handlerCallback(data);
+        if (data[0] == CMD_GOT_HIT) {
+            receivedGotHit = true;
+            gotHitHPMode = data[1];
+            gotHitPID = data[2];
+            gotHitSID = data[3] | (data[4] << 8);
+        }
     }
 }
 
+/**
+ * Returns if a GOT_HIT was received since the last time called.
+ */
+bool hpnowGotHit() {
+    if (receivedGotHit) {
+        receivedGotHit = false;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Returns the last received hpmode
+ */
+uint8_t hpnowGotHitHPMode() {
+    return gotHitHPMode;
+}
+
+/**
+ * Returns the last received PID
+ */
+uint8_t hpnowGotHitPID() {
+    return gotHitPID;
+}
+
+/**
+ * Returns the last received SID
+ */
+uint16_t hpnowGotHitSID() {
+    return gotHitSID;
+}
+
+/**
+ * Sending hpnow SYS_INIT command to nearby hitpoints
+ */
 void hpnowSysInit(uint8_t hpMode, uint8_t color_r, uint8_t color_g, uint8_t color_b) {
     const uint8_t peer_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     uint8_t data[6] = {
-        0x01,
+        CMD_SYS_INIT,
         hpMode,
         color_r,
         color_g,
@@ -60,10 +113,14 @@ void hpnowSysInit(uint8_t hpMode, uint8_t color_r, uint8_t color_g, uint8_t colo
     esp_err_t result = esp_now_send(peer_addr, data, sizeof(data));
     logDebug("Send CMD SYS INIT with result: %d (%d -> OK)", result, ESP_OK);
 }
-void hpnowHitSuccess(uint8_t hpMode, uint8_t pid, uint16_t sid, uint8_t cooldown) {
+
+/**
+ * Sending hpnow HIT_VALID command to nearby hitpoints
+ */
+void hpnowHitValid(uint8_t hpMode, uint8_t pid, uint16_t sid, uint8_t cooldown) {
     const uint8_t peer_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     uint8_t data[6] = {
-        0x02,
+        CMD_HIT_VALID,
         hpMode,
         pid,
         sid & 0xff,
@@ -73,7 +130,10 @@ void hpnowHitSuccess(uint8_t hpMode, uint8_t pid, uint16_t sid, uint8_t cooldown
     logDebug("Send CMD GOT HIT with result: %d (%d -> OK)", result, ESP_OK);
 }
 
-void hpnowInit(void (*cb)(const uint8_t *data)) {
+/**
+ * Init hpnow/ESPNOW driver
+ */
+void hpnowInit() {
     logInfo("Init: ESPNOW Communication");
     WiFi.mode(WIFI_STA);
     logDebug("-> STA MAC: %s", WiFi.macAddress().c_str());
@@ -82,7 +142,6 @@ void hpnowInit(void (*cb)(const uint8_t *data)) {
     initESPNow(false);
     logDebug("-> ESP NOW Init done");
 
-    handlerCallback = cb;
     esp_now_register_recv_cb(onReceive);
     logDebug("-> Recv CB set");
 
