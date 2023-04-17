@@ -178,7 +178,8 @@ void loop() {
         }
 
         if (hpnowGotHitEvent) {
-            // com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(), hpnowGotHitSID());
+            com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(), hpnowGotHitSID());
+            logInfo("Triggered HP_GOT_HIT action");
         }
     }
 
