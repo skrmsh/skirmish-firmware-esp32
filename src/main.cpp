@@ -24,6 +24,7 @@ Copyright (C) 2023 Ole Lange
 #ifndef NO_PHASER
 #include <inc/infrared.h>
 #endif
+#include <inc/hpnow.h>
 
 TaskHandle_t audioTaskHandle;
 
@@ -63,7 +64,8 @@ void setup() {
 // the audio gain will be set to 0 -> silence
 #ifndef NO_AUDIO
     float audioGain = 0.6;
-    if (digitalRead(PIN_PWR_OFF)) audioGain = 0;
+    if (digitalRead(PIN_PWR_OFF))
+        audioGain = 0;
     audioInit(audioGain);
 
     // Creating audio task and pinning it to core 0
@@ -88,6 +90,9 @@ void setup() {
     bluetoothDriver->init();
     userInterface->setScene(SCENE_BLE_CONNECT);
 
+    hpnowInit();
+    hpnowSysInit(0, 0, 0, 255);
+
     logInfo("Current Battery Voltage is %d", hardwareReadVBAT());
 
 #ifndef NO_AUDIO
@@ -108,6 +113,7 @@ uint8_t hitLocation;
 
 bool triggerPressed = false;
 bool hitpointEvent = false;
+bool hpnowGotHitEvent = false;
 
 void loop() {
     hardwareLoop();
@@ -128,6 +134,7 @@ void loop() {
 
     triggerPressed = hardwareWasTriggerPressed();
     hitpointEvent = hitpointEventTriggered();
+    hpnowGotHitEvent = hpnowGotHit();
 
     if (game->isRunning()) {
 #ifndef NO_PHASER
@@ -158,7 +165,7 @@ void loop() {
             logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot,
                      hitLocation);
 
-            if (lastReceivedShot != 0) {  // Shot really contains data
+            if (lastReceivedShot != 0) { // Shot really contains data
                 pid = getPIDFromShot(lastReceivedShot);
                 sid = getSIDFromShot(lastReceivedShot);
 
@@ -168,6 +175,11 @@ void loop() {
                     com->gotHit(pid, sid, hitLocation);
                 }
             }
+        }
+
+        if (hpnowGotHitEvent) {
+            com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(), hpnowGotHitSID());
+            logInfo("Triggered HP_GOT_HIT action");
         }
     }
 

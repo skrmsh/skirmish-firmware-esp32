@@ -56,6 +56,9 @@ Copyright (C) 2023 Ole Lange
 #define ACTION_INVALID_GAME 14
 #define ACTION_POWER_OFF 15
 #define ACTION_HW_STATUS 16
+#define ACTION_HP_INIT 17
+#define ACITON_HP_GOT_HIT 18
+#define ACTION_HP_HIT_VALID 19
 
 // UI Scenes
 #define SCENE_NO_SCENE 0

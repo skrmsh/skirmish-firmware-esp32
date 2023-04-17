@@ -10,6 +10,7 @@ Copyright (C) 2023 Ole Lange
 #include <inc/bluetooth.h>
 #include <inc/const.h>
 #include <inc/hardware_control.h>
+#include <inc/hpnow.h>
 #include <inc/log.h>
 #include <inc/skirmcom.h>
 #include <inc/time.h>
@@ -59,7 +60,7 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
 
     // Iterating over the "a" array and executing all actions
     for (int action : root["a"].as<JsonArray>()) {
-        if (action != 0) {  // Prevent spamming keep-alive actions on the log
+        if (action != 0) { // Prevent spamming keep-alive actions on the log
             logDebug("Action %d:", action);
         } else {
             debugPrintJson = false;
@@ -116,6 +117,26 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         if (action == ACTION_POWER_OFF) {
             logInfo("Good Bye!");
             hardwarePowerOff();
+        }
+
+        if (action == ACTION_HP_INIT) {
+            if (root.containsKey("hpmode") && root.containsKey("color_r") && root.containsKey("color_g") && root.containsKey("color_b")) {
+                uint8_t hpmode = root["hpmode"];
+                uint8_t color_r = root["color_r"];
+                uint8_t color_g = root["color_g"];
+                uint8_t color_b = root["color_b"];
+                hpnowSysInit(hpmode, color_r, color_g, color_b);
+            }
+        }
+
+        if (action == ACTION_HP_HIT_VALID) {
+            if (root.containsKey("hpmode") && root.containsKey("pid") && root.containsKey("sid") && root.containsKey("cooldown")) {
+                uint8_t hpmode = root["hpmode"];
+                uint8_t pid = root["pid"];
+                uint16_t sid = root["sid"];
+                uint8_t cooldown = root["cooldown"];
+                hpnowHitValid(hpmode, pid, sid, cooldown);
+            }
         }
     }
 
@@ -213,9 +234,9 @@ void SkirmCom::gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation) {
 
 /**
  * This method tells the app/server the hardware status of this device
- * 
+ *
  * @param battery The battery percentage
-*/
+ */
 void SkirmCom::hwStatus(float battery) {
     // Clear current data
     jsonOutDocument->clear();
@@ -224,11 +245,35 @@ void SkirmCom::hwStatus(float battery) {
     /*
     { "a": [ACTION_HW_STATUS], "battery": battery }
     */
-   JsonArray actions = jsonOutDocument->createNestedArray("a");
-   actions.add(ACTION_HW_STATUS);
-   jsonOutDocument->operator[]("battery") = battery;
+    JsonArray actions = jsonOutDocument->createNestedArray("a");
+    actions.add(ACTION_HW_STATUS);
+    jsonOutDocument->operator[]("battery") = battery;
 
-   // Sending data
-   bleDriver->writeJsonData(jsonOutDocument);
+    // Sending data
+    bleDriver->writeJsonData(jsonOutDocument);
+}
 
+/**
+ * This method triggers the HP_GOT_HIT action oon the server.
+ *
+ * @param hpmode - received hpmode value
+ * @param pid - received pid value
+ * @param sid - received sid value
+ */
+void SkirmCom::hpGotHit(uint8_t hpmode, uint8_t pid, uint16_t sid) {
+    // Clear current data
+    jsonOutDocument->clear();
+
+    // Generating Json Data
+    /*
+    { "a": [ACTION_HP_GOT_HIT], "hpmode": hpmode, "pid": pid, "sid": sid }
+    */
+    JsonArray actions = jsonOutDocument->createNestedArray("a");
+    actions.add(ACITON_HP_GOT_HIT);
+    jsonOutDocument->operator[]("hpmode") = hpmode;
+    jsonOutDocument->operator[]("pid") = pid;
+    jsonOutDocument->operator[]("sid") = sid;
+
+    // Sending data
+    bleDriver->writeJsonData(jsonOutDocument);
 }
