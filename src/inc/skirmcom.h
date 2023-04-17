@@ -14,14 +14,14 @@ Copyright (C) 2023 Ole Lange
 #include <inc/ui.h>
 
 class SkirmCom {
-   private:
+private:
     SkirmishBluetooth *bleDriver;
     Game *game;
     SkirmishUI *ui;
 
     DynamicJsonDocument *jsonOutDocument;
 
-   public:
+public:
     SkirmCom(SkirmishBluetooth *bleDriver, Game *game, SkirmishUI *ui);
 
     void init();
@@ -39,4 +39,6 @@ class SkirmCom {
     void gotHit(uint8_t pid, uint16_t sid, uint8_t hitLocation);
 
     void hwStatus(float battery);
+
+    void hpGotHit(uint8_t hpmode, uint8_t pid, uint16_t sid);
 };
