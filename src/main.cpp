@@ -91,7 +91,6 @@ void setup() {
     userInterface->setScene(SCENE_BLE_CONNECT);
 
     hpnowInit();
-    hpnowSysInit(0, 0, 0, 255);
 
     logInfo("Current Battery Voltage is %d", hardwareReadVBAT());
 
