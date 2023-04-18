@@ -24,7 +24,9 @@ Copyright (C) 2023 Ole Lange
 #ifndef NO_PHASER
 #include <inc/infrared.h>
 #endif
+#ifndef NO_HPNOW
 #include <inc/hpnow.h>
+#endif
 
 TaskHandle_t audioTaskHandle;
 
@@ -90,7 +92,9 @@ void setup() {
     bluetoothDriver->init();
     userInterface->setScene(SCENE_BLE_CONNECT);
 
+#ifndef NO_HPNOW
     hpnowInit();
+#endif
 
     logInfo("Current Battery Voltage is %d", hardwareReadVBAT());
 
@@ -133,7 +137,9 @@ void loop() {
 
     triggerPressed = hardwareWasTriggerPressed();
     hitpointEvent = hitpointEventTriggered();
+#ifndef NO_HPNOW
     hpnowGotHitEvent = hpnowGotHit();
+#endif
 
     if (game->isRunning()) {
 #ifndef NO_PHASER
@@ -175,11 +181,12 @@ void loop() {
                 }
             }
         }
-
+#ifndef NO_HPNOW
         if (hpnowGotHitEvent) {
             com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(), hpnowGotHitSID());
             logInfo("Triggered HP_GOT_HIT action");
         }
+#endif
     }
 
     userInterface->update();

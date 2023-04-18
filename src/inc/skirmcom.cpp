@@ -10,7 +10,9 @@ Copyright (C) 2023 Ole Lange
 #include <inc/bluetooth.h>
 #include <inc/const.h>
 #include <inc/hardware_control.h>
+#ifndef NO_HPNOW
 #include <inc/hpnow.h>
+#endif
 #include <inc/log.h>
 #include <inc/skirmcom.h>
 #include <inc/time.h>
@@ -118,7 +120,7 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
             logInfo("Good Bye!");
             hardwarePowerOff();
         }
-
+#ifndef NO_HPNOW
         if (action == ACTION_HP_INIT) {
             if (root.containsKey("hpmode") && root.containsKey("color_r") && root.containsKey("color_g") && root.containsKey("color_b")) {
                 uint8_t hpmode = root["hpmode"];
@@ -138,6 +140,7 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
                 hpnowHitValid(hpmode, pid, sid, cooldown);
             }
         }
+#endif
     }
 
     if (debugPrintJson) {
@@ -261,6 +264,7 @@ void SkirmCom::hwStatus(float battery) {
  * @param sid - received sid value
  */
 void SkirmCom::hpGotHit(uint8_t hpmode, uint8_t pid, uint16_t sid) {
+#ifndef NO_HPNOW
     // Clear current data
     jsonOutDocument->clear();
 
@@ -276,4 +280,5 @@ void SkirmCom::hpGotHit(uint8_t hpmode, uint8_t pid, uint16_t sid) {
 
     // Sending data
     bleDriver->writeJsonData(jsonOutDocument);
+#endif
 }
