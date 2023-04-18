@@ -106,4 +106,6 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 
 // Communication
 #define HW_STATUS_SEND_INTERVAL 15000
+
+#define NO_HPNOW // Disable hpnow with this flag.. (requires much energy i guess)
 #define ESPNOW_CHANNEL 3
