@@ -39,6 +39,7 @@ bool CountdownScene::update() {
         prevSecLeft = secLeft;
         sprintf(countdown, "%d", secLeft);
 
+#ifndef NO_AUDIO
         if (secLeft == 3) {
             audioBegin("/three.wav");
         } else if (secLeft == 2) {
@@ -48,9 +49,10 @@ bool CountdownScene::update() {
         } else if (secLeft == 0) {
             audioBegin("/fight.wav");
         }
+#endif
         hardwareVibrate(150);
 
-        return true;  // render if countdown has changed
+        return true; // render if countdown has changed
     }
 
     // if the countdown is finished change to the game scene
