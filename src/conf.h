@@ -38,16 +38,7 @@ Copyright (C) 2023 Ole Lange
 #define PIN_SCL 22
 
 // Hitpoint
-#define PIN_HP_IRQ 35 // interrupt request pin
-
-// This is a list of all hitpoints attached to the device
-// this firmware is compiled for.
-#if MODULE_TYPE == MODULE_PHASER
-const uint8_t attachedHitpoints[1] = {HP_ADDR_PHASER};
-#elif MODULE_TYPE == MODULE_CHEST
-const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
-                                      HP_ADDR_SHOULDER_R, HP_ADDR_BACK};
-#endif
+#define PIN_HP_IRQ 35  // interrupt request pin
 
 // Misc hardware pins
 #define PIN_PWR_OFF 4
@@ -73,7 +64,7 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 #define NOT_CONNECTED_POWER_OFF_TIMEOUT 5
 
 // Display
-#define DISPLAY_ROTATION 2 // -> Portrait with connector on the top side
+#define DISPLAY_ROTATION 2  // -> Portrait with connector on the top side
 
 #define PIN_TFT_SCK 14
 #define PIN_TFT_DATA 13
@@ -86,7 +77,7 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 #define NO_DISPLAY
 #endif
 
-#define GAMMA_CORRECTION // Apply gamma correction to the display#
+#define GAMMA_CORRECTION  // Apply gamma correction to the display#
 
 // Audio / Speaker Amp
 #define PIN_SPK_EN 23
@@ -107,5 +98,6 @@ const uint8_t attachedHitpoints[4] = {HP_ADDR_CHEST, HP_ADDR_SHOULDER_L,
 // Communication
 #define HW_STATUS_SEND_INTERVAL 15000
 
-#define NO_HPNOW // Disable hpnow with this flag.. (requires much energy i guess)
+#define NO_HPNOW  // Disable hpnow with this flag.. (requires much energy i
+                  // guess)
 #define ESPNOW_CHANNEL 3
