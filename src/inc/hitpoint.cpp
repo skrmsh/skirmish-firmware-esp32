@@ -13,6 +13,9 @@ Copyright (C) 2023 Ole Lange
 #include <inc/hitpoint.h>
 #include <inc/log.h>
 
+uint8_t *attachedHitpoints;
+uint8_t attachedHitpointsCount;
+
 //
 // ====== Infrared Shot Receiver Functions ======
 //
@@ -38,12 +41,12 @@ void IRAM_ATTR hitpointISR() { isHitpointEventTriggered = true; }
  * @return true if a event should be executed
  */
 bool hitpointEventTriggered() {
-    // store a local copy
-    bool retVal = isHitpointEventTriggered;
-    // reset the event trigger
-    isHitpointEventTriggered = false;
+  // store a local copy
+  bool retVal = isHitpointEventTriggered;
+  // reset the event trigger
+  isHitpointEventTriggered = false;
 
-    return retVal;
+  return retVal;
 }
 
 /**
@@ -54,26 +57,26 @@ bool hitpointEventTriggered() {
  * @return Raw shot data packet. If 0, the shot isn't valid.
  */
 uint32_t hitpointReadShotRaw(uint8_t addr) {
-    // Request 4 Bytes from the hitpoint
-    uint8_t returned_bytes = Wire.requestFrom(addr, (uint8_t)4);
+  // Request 4 Bytes from the hitpoint
+  uint8_t returned_bytes = Wire.requestFrom(addr, (uint8_t)4);
 
-    // Check if 4 Bytes are returned
-    if (returned_bytes != 4) {
-        // If not abort the operation without reading a shot
-        return 0;
-    }
+  // Check if 4 Bytes are returned
+  if (returned_bytes != 4) {
+    // If not abort the operation without reading a shot
+    return 0;
+  }
 
-    // Variable to store the packet
-    uint32_t shot = 0x00000000;
-    while (Wire.available()) {
-        // Shift the current value of shot left by 8 bits and
-        // OR it with the next byte of data. This adds the
-        // next byte of data to the end of shot, preserving
-        // the existing data.
-        shot = (shot << 8) | (uint8_t)Wire.read();
-    }
+  // Variable to store the packet
+  uint32_t shot = 0x00000000;
+  while (Wire.available()) {
+    // Shift the current value of shot left by 8 bits and
+    // OR it with the next byte of data. This adds the
+    // next byte of data to the end of shot, preserving
+    // the existing data.
+    shot = (shot << 8) | (uint8_t)Wire.read();
+  }
 
-    return shot;
+  return shot;
 }
 
 /**
@@ -83,27 +86,27 @@ uint32_t hitpointReadShotRaw(uint8_t addr) {
  * @param [out] addr address where the shot was received
  * @return Raw shot data packet. If 0, no shot was received.
  */
-uint32_t hitpointReadShotRaw(uint8_t* addr) {
-    // This function is typically called when one or more hitpoints triggered
-    // the hitpoint interrupt, to make sure that the data is ready when read
-    // this function will wait some time before starting to read the hitpoints
-    delay(50);
+uint32_t hitpointReadShotRaw(uint8_t *addr) {
+  // This function is typically called when one or more hitpoints triggered
+  // the hitpoint interrupt, to make sure that the data is ready when read
+  // this function will wait some time before starting to read the hitpoints
+  delay(50);
 
-    uint32_t retVal = 0;
-    uint32_t hpVal = 0;
+  uint32_t retVal = 0;
+  uint32_t hpVal = 0;
 
-    // Read every hitpoint, but only write the first which isn't
-    // zero to the return value. This causes that the first shot
-    // is used but every hitpoint it reset
-    for (uint8_t a : attachedHitpoints) {
-        hpVal = hitpointReadShotRaw(a);
-        if (retVal == 0 && hpVal != 0) {
-            retVal = hpVal;
-            *addr = a;
-        }
+  // Read every hitpoint, but only write the first which isn't
+  // zero to the return value. This causes that the first shot
+  // is used but every hitpoint it reset
+  for (uint8_t i = 0; i < attachedHitpointsCount; i++) {
+    hpVal = hitpointReadShotRaw(attachedHitpoints[i]);
+    if (retVal == 0 && hpVal != 0) {
+      retVal = hpVal;
+      *addr = attachedHitpoints[i];
     }
+  }
 
-    return retVal;
+  return retVal;
 }
 
 /**
@@ -149,7 +152,7 @@ const uint8_t PROGMEM gamma8[] = {
 
 // Buffer containing the data which should be written to the hitpoint
 // is allocated to 5 Bytes in the init function
-uint8_t* i2cWriteBuffer;
+uint8_t *i2cWriteBuffer;
 
 /**
  * Writes n bytes from the i2cWriteBuffer to the hitpoint with
@@ -159,19 +162,19 @@ uint8_t* i2cWriteBuffer;
  * @param addr Hitpoint Address
  */
 void writeBuffer(uint8_t n, uint8_t addr) {
-    // Starts the transmission
-    Wire.beginTransmission(addr);
-    // Transfers the bytes
-    Wire.write(i2cWriteBuffer, n);
-    // Ends the transmission
-    Wire.endTransmission();
+  // Starts the transmission
+  Wire.beginTransmission(addr);
+  // Transfers the bytes
+  Wire.write(i2cWriteBuffer, n);
+  // Ends the transmission
+  Wire.endTransmission();
 
-    // And delays a short period of time.
-    // I don't really remeber why this was implemented
-    // in the old prototype code but I transfered it
-    // to this code to prevent any bugs. TODO: find out
-    // if it is really required!
-    delay(50);
+  // And delays a short period of time.
+  // I don't really remeber why this was implemented
+  // in the old prototype code but I transfered it
+  // to this code to prevent any bugs. TODO: find out
+  // if it is really required!
+  delay(50);
 }
 
 /**
@@ -182,17 +185,17 @@ void writeBuffer(uint8_t n, uint8_t addr) {
  * @param animation The animation which the given hitpoint should run
  */
 void hitpointSelectAnimation(uint8_t addr, uint8_t animation) {
-    // Set Command
-    i2cWriteBuffer[0] = HP_CMD_SELECT_ANIM;
-    // Set animation parameter
-    i2cWriteBuffer[1] = animation;
-    // Set end value
-    i2cWriteBuffer[2] = 0x00;
+  // Set Command
+  i2cWriteBuffer[0] = HP_CMD_SELECT_ANIM;
+  // Set animation parameter
+  i2cWriteBuffer[1] = animation;
+  // Set end value
+  i2cWriteBuffer[2] = 0x00;
 
-    // Write the data to the hitpoint
-    writeBuffer(3, addr);
+  // Write the data to the hitpoint
+  writeBuffer(3, addr);
 
-    logDebug("Set Hitpoint (0x%02x) animation: 0x%02x", addr, animation);
+  logDebug("Set Hitpoint (0x%02x) animation: 0x%02x", addr, animation);
 }
 
 /**
@@ -202,8 +205,9 @@ void hitpointSelectAnimation(uint8_t addr, uint8_t animation) {
  * @param animation The animation which the given hitpoint should run
  */
 void hitpointSelectAnimation(uint8_t animation) {
-    for (uint8_t addr : attachedHitpoints)
-        hitpointSelectAnimation(addr, animation);
+  for (uint8_t i = 0; i < attachedHitpointsCount; i++) {
+    hitpointSelectAnimation(attachedHitpoints[i], animation);
+  }
 }
 
 /**
@@ -219,17 +223,17 @@ void hitpointSelectAnimation(uint8_t animation) {
  * @param speed Speed to set for the animations
  */
 void hitpointSetAnimationSpeed(uint8_t addr, uint8_t speed) {
-    // Set Command
-    i2cWriteBuffer[0] = HP_CMD_SET_ANIM_SPEED;
-    // Set speed parameter
-    i2cWriteBuffer[1] = speed;
-    // Set end value
-    i2cWriteBuffer[2] = 0;
+  // Set Command
+  i2cWriteBuffer[0] = HP_CMD_SET_ANIM_SPEED;
+  // Set speed parameter
+  i2cWriteBuffer[1] = speed;
+  // Set end value
+  i2cWriteBuffer[2] = 0;
 
-    // Write the data to the hitpoint
-    writeBuffer(3, addr);
+  // Write the data to the hitpoint
+  writeBuffer(3, addr);
 
-    logDebug("Set Hitpoint (0x%02x) animation speed to: %d", addr, speed);
+  logDebug("Set Hitpoint (0x%02x) animation speed to: %d", addr, speed);
 }
 
 /**
@@ -244,8 +248,9 @@ void hitpointSetAnimationSpeed(uint8_t addr, uint8_t speed) {
  * @param speed Speed to set for the animations
  */
 void hitpointSetAnimationSpeed(uint8_t speed) {
-    for (uint8_t addr : attachedHitpoints)
-        hitpointSetAnimationSpeed(addr, speed);
+  for (uint8_t i = 0; i < attachedHitpointsCount; i++) {
+    hitpointSetAnimationSpeed(attachedHitpoints[i], speed);
+  }
 }
 
 /**
@@ -257,22 +262,22 @@ void hitpointSetAnimationSpeed(uint8_t speed) {
  * @param b Blue color value (0-255)
  */
 void hitpointSetColor(uint8_t addr, uint8_t r, uint8_t g, uint8_t b) {
-    // Set Command
-    i2cWriteBuffer[0] = HP_CMD_SET_COLOR;
-    // Set r, g, b parameter
-    uint8_t dim_r = r * LED_MAX_BRIGHTNESS;
-    uint8_t dim_g = g * LED_MAX_BRIGHTNESS;
-    uint8_t dim_b = b * LED_MAX_BRIGHTNESS;
-    i2cWriteBuffer[1] = gamma8[dim_r];
-    i2cWriteBuffer[2] = gamma8[dim_g];
-    i2cWriteBuffer[3] = gamma8[dim_b];
-    // Set end value
-    i2cWriteBuffer[4] = 0;
+  // Set Command
+  i2cWriteBuffer[0] = HP_CMD_SET_COLOR;
+  // Set r, g, b parameter
+  uint8_t dim_r = r * LED_MAX_BRIGHTNESS;
+  uint8_t dim_g = g * LED_MAX_BRIGHTNESS;
+  uint8_t dim_b = b * LED_MAX_BRIGHTNESS;
+  i2cWriteBuffer[1] = gamma8[dim_r];
+  i2cWriteBuffer[2] = gamma8[dim_g];
+  i2cWriteBuffer[3] = gamma8[dim_b];
+  // Set end value
+  i2cWriteBuffer[4] = 0;
 
-    // Write the data to the hitpoint
-    writeBuffer(5, addr);
+  // Write the data to the hitpoint
+  writeBuffer(5, addr);
 
-    logDebug("Set Hitpoint (0x%02x) color to: #%02x%02x%02x", addr, r, g, b);
+  logDebug("Set Hitpoint (0x%02x) color to: #%02x%02x%02x", addr, r, g, b);
 }
 
 /**
@@ -283,7 +288,9 @@ void hitpointSetColor(uint8_t addr, uint8_t r, uint8_t g, uint8_t b) {
  * @param b Blue color value (0-255)
  */
 void hitpointSetColor(uint8_t r, uint8_t g, uint8_t b) {
-    for (uint8_t addr : attachedHitpoints) hitpointSetColor(addr, r, g, b);
+  for (uint8_t i = 0; i < attachedHitpointsCount; i++) {
+    hitpointSetColor(attachedHitpoints[i], r, g, b);
+  }
 }
 
 /**
@@ -294,17 +301,31 @@ void hitpointSetColor(uint8_t r, uint8_t g, uint8_t b) {
  * ability to trigger an interrupt on the phaser.
  */
 void hitpointInit() {
-    logInfo("Init: Hitpoint driver");
+  logInfo("Init: Hitpoint driver");
 
-    // Initing I2C Communication
-    Wire.begin(PIN_SDA, PIN_SCL);
-    logDebug("-> I2C initialized");
+  // Initing I2C Communication
+  Wire.begin(PIN_SDA, PIN_SCL);
+  logDebug("-> I2C initialized");
 
-    // Attaching interrupts to the configured IRQ pin
-    pinMode(PIN_HP_IRQ, INPUT);
-    attachInterrupt(PIN_HP_IRQ, hitpointISR, FALLING);
-    logDebug("-> Hitpoint ISR attached");
+  // Attaching interrupts to the configured IRQ pin
+  pinMode(PIN_HP_IRQ, INPUT);
+  attachInterrupt(PIN_HP_IRQ, hitpointISR, FALLING);
+  logDebug("-> Hitpoint ISR attached");
 
-    // Allocating memory for the i2c write buffer
-    i2cWriteBuffer = (uint8_t*)malloc(5 * sizeof(uint8_t));
+  // Allocating memory for the i2c write buffer
+  i2cWriteBuffer = (uint8_t *)malloc(5 * sizeof(uint8_t));
+
+  // Automatic scanning for connected hitpoints
+  attachedHitpoints = (uint8_t *)malloc(8);
+  uint8_t transmissionError = 0;
+  for (uint8_t addr = 0x50; addr < 0x58; addr++) {
+    Wire.beginTransmission(addr);
+    transmissionError = Wire.endTransmission();
+
+    if (transmissionError == 0) {
+      logDebug("Found attached hitpoint @ 0x%02x", addr);
+      attachedHitpoints[attachedHitpointsCount] = addr;
+      attachedHitpointsCount++;
+    }
+  }
 }
