@@ -36,6 +36,8 @@ SkirmishUI::SkirmishUI(SkirmishDisplay *display, SkirmishBluetooth *bluetooth,
     gameScene = new GameScene(this);
 
     currentScene = splashscreenScene;
+
+    prevBluetoothIsConnected = this->bluetooth->getConnectionState();
 }
 
 /**
@@ -59,6 +61,7 @@ void SkirmishUI::setScene(uint8_t scene) {
 
     if (scene == SCENE_SPLASHSCREEN) currentScene = splashscreenScene;
     if (scene == SCENE_BLE_CONNECT) currentScene = splashscreenScene;
+    if (scene == SCENE_BLE_RECONNECT) currentScene = splashscreenScene;
     if (scene == SCENE_NO_GAME) currentScene = splashscreenScene;
     if (scene == SCENE_JOINED_GAME) currentScene = joinedGameScene;
     if (scene == SCENE_COUNTDOWN) currentScene = countdownScene;
@@ -106,7 +109,8 @@ void SkirmishUI::update() {
     // When the device just disconnected
     if (bluetoothIsConnected == false && prevBluetoothIsConnected == true) {
         // Display the "waiting for connection scene"
-        setScene(SCENE_BLE_CONNECT);
+        logDebug("Changed to reconnect scene");
+        setScene(SCENE_BLE_RECONNECT);
     }
     prevBluetoothIsConnected = bluetoothIsConnected;
 

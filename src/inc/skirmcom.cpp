@@ -62,7 +62,7 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
 
     // Iterating over the "a" array and executing all actions
     for (int action : root["a"].as<JsonArray>()) {
-        if (action != 0) { // Prevent spamming keep-alive actions on the log
+        if (action != 0) {  // Prevent spamming keep-alive actions on the log
             logDebug("Action %d:", action);
         } else {
             debugPrintJson = false;
@@ -122,7 +122,8 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         }
 #ifndef NO_HPNOW
         if (action == ACTION_HP_INIT) {
-            if (root.containsKey("hpmode") && root.containsKey("color_r") && root.containsKey("color_g") && root.containsKey("color_b")) {
+            if (root.containsKey("hpmode") && root.containsKey("color_r") &&
+                root.containsKey("color_g") && root.containsKey("color_b")) {
                 uint8_t hpmode = root["hpmode"];
                 uint8_t color_r = root["color_r"];
                 uint8_t color_g = root["color_g"];
@@ -132,7 +133,8 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
         }
 
         if (action == ACTION_HP_HIT_VALID) {
-            if (root.containsKey("hpmode") && root.containsKey("pid") && root.containsKey("sid") && root.containsKey("cooldown")) {
+            if (root.containsKey("hpmode") && root.containsKey("pid") &&
+                root.containsKey("sid") && root.containsKey("cooldown")) {
                 uint8_t hpmode = root["hpmode"];
                 uint8_t pid = root["pid"];
                 uint16_t sid = root["sid"];
@@ -160,7 +162,7 @@ void SkirmCom::onConnect() {}
  */
 void SkirmCom::onDisconnect() {
     // Resetting game on disconnect
-    game->reset();
+    // game->reset();
 }
 
 /**
