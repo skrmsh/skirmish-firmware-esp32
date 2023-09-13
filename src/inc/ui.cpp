@@ -14,6 +14,7 @@ Copyright (C) 2023 Ole Lange
 #include <inc/scenes/joined_game.h>
 #include <inc/scenes/scene.h>
 #include <inc/scenes/splash.h>
+#include <inc/time.h>
 #include <inc/ui.h>
 #include <theme.h>
 
@@ -102,8 +103,27 @@ void SkirmishUI::update() {
 
     // When the device just connected
     if (bluetoothIsConnected == true && prevBluetoothIsConnected == false) {
-        // Display the "please join a game scene"
-        setScene(SCENE_NO_GAME);
+        // Display the "please join a game scene" / change back to the game
+        // scene. TODO: Doesn't work if re-connected
+        uint32_t currentTS = getCurrentTS();
+        if (game->gid[0] == 0) {  // No game
+            setScene(SCENE_NO_GAME);
+
+        } else if (game->gid[0] != 0 &&     // joined
+                   game->startTime == 0) {  // but not started game
+            setScene(SCENE_JOINED_GAME);
+
+        } else if (game->startTime > 0 &&           // started game
+                   game->startTime >= currentTS) {  // but counting down
+            setScene(SCENE_COUNTDOWN);
+
+        } else if (game->startTime > 0 &&          // started game
+                   game->startTime < currentTS) {  // but running
+            setScene(SCENE_GAME);
+
+        } else { /* Should never happen */
+            setScene(SCENE_NO_SCENE);
+        }
     }
 
     // When the device just disconnected

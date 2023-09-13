@@ -137,6 +137,7 @@ Game::Game() {
     gid = (char *)malloc(33 * sizeof(char));
     team = Team();
     player = Player();
+    startTime = 0;
 }
 
 /**
@@ -144,6 +145,7 @@ Game::Game() {
  */
 void Game::reset() {
     strcpy(gid, "");
+    startTime = 0;
     team.reset();
     player.reset();
 }
