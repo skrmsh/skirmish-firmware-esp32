@@ -108,19 +108,15 @@ void SkirmishUI::update() {
         uint32_t currentTS = getCurrentTS();
         if (game->gid[0] == 0) {  // No game
             setScene(SCENE_NO_GAME);
-
-        } else if (game->gid[0] != 0 &&     // joined
-                   game->startTime == 0) {  // but not started game
+        } else if (strcmp(game->gid, "") != 0 &&  // joined
+                   game->startTime == 0) {        // but not started game
             setScene(SCENE_JOINED_GAME);
-
         } else if (game->startTime > 0 &&           // started game
                    game->startTime >= currentTS) {  // but counting down
             setScene(SCENE_COUNTDOWN);
-
         } else if (game->startTime > 0 &&          // started game
                    game->startTime < currentTS) {  // but running
             setScene(SCENE_GAME);
-
         } else { /* Should never happen */
             setScene(SCENE_NO_SCENE);
         }
