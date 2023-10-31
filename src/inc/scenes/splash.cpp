@@ -43,6 +43,13 @@ void SplashscreenScene::onSet(uint8_t id) {
 
         // Generating QR Code
         qrcode_initText(&nameQR, qrBytes, 3, ECC_LOW, ui->bluetooth->getName());
+    } else if (id == SCENE_BLE_RECONNECT) {
+        strcpy(splashText, "Please re-connect!");
+
+        hitpointSelectAnimation(HP_ANIM_ROTATE);
+        hitpointSetAnimationSpeed(8);
+        hitpointSetColor(0, 0, 255);
+
     } else if (id == SCENE_NO_GAME) {
         strcpy(splashText, "Please join a game!");
 

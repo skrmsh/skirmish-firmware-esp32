@@ -60,8 +60,13 @@ Copyright (C) 2023 Ole Lange
 #define ADC_AT_4200mV 2690.0
 #define ADC_AT_3000mV 1910.0
 
-// Time after which the phaser is turned off when not connected via BLE
+// Time after which the phaser is turned off when not connected via BLE (in
+// minutes)
 #define NOT_CONNECTED_POWER_OFF_TIMEOUT 5
+
+// Time after which the phaser resets it's game state when not connected via BLE
+// (in ms)
+#define CONNECTION_LOSS_RESET_TIMEOUT 20000
 
 // Display
 #define DISPLAY_ROTATION 2  // -> Portrait with connector on the top side

@@ -135,8 +135,10 @@ bool Player::isInviolable() {
 Game::Game() {
     // Allocating 33 bytes of memory for gameID strings
     gid = (char *)malloc(33 * sizeof(char));
+    strcpy(gid, "");
     team = Team();
     player = Player();
+    startTime = 0;
 }
 
 /**
@@ -144,6 +146,7 @@ Game::Game() {
  */
 void Game::reset() {
     strcpy(gid, "");
+    startTime = 0;
     team.reset();
     player.reset();
 }

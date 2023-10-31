@@ -14,6 +14,7 @@ Copyright (C) 2023 Ole Lange
 #include <inc/scenes/joined_game.h>
 #include <inc/scenes/scene.h>
 #include <inc/scenes/splash.h>
+#include <inc/time.h>
 #include <inc/ui.h>
 #include <theme.h>
 
@@ -36,6 +37,8 @@ SkirmishUI::SkirmishUI(SkirmishDisplay *display, SkirmishBluetooth *bluetooth,
     gameScene = new GameScene(this);
 
     currentScene = splashscreenScene;
+
+    prevBluetoothIsConnected = this->bluetooth->getConnectionState();
 }
 
 /**
@@ -59,6 +62,7 @@ void SkirmishUI::setScene(uint8_t scene) {
 
     if (scene == SCENE_SPLASHSCREEN) currentScene = splashscreenScene;
     if (scene == SCENE_BLE_CONNECT) currentScene = splashscreenScene;
+    if (scene == SCENE_BLE_RECONNECT) currentScene = splashscreenScene;
     if (scene == SCENE_NO_GAME) currentScene = splashscreenScene;
     if (scene == SCENE_JOINED_GAME) currentScene = joinedGameScene;
     if (scene == SCENE_COUNTDOWN) currentScene = countdownScene;
@@ -99,14 +103,30 @@ void SkirmishUI::update() {
 
     // When the device just connected
     if (bluetoothIsConnected == true && prevBluetoothIsConnected == false) {
-        // Display the "please join a game scene"
-        setScene(SCENE_NO_GAME);
+        // Display the "please join a game scene" / change back to the game
+        // scene. TODO: Doesn't work if re-connected
+        uint32_t currentTS = getCurrentTS();
+        if (game->gid[0] == 0) {  // No game
+            setScene(SCENE_NO_GAME);
+        } else if (strcmp(game->gid, "") != 0 &&  // joined
+                   game->startTime == 0) {        // but not started game
+            setScene(SCENE_JOINED_GAME);
+        } else if (game->startTime > 0 &&           // started game
+                   game->startTime >= currentTS) {  // but counting down
+            setScene(SCENE_COUNTDOWN);
+        } else if (game->startTime > 0 &&          // started game
+                   game->startTime < currentTS) {  // but running
+            setScene(SCENE_GAME);
+        } else { /* Should never happen */
+            setScene(SCENE_NO_SCENE);
+        }
     }
 
     // When the device just disconnected
     if (bluetoothIsConnected == false && prevBluetoothIsConnected == true) {
         // Display the "waiting for connection scene"
-        setScene(SCENE_BLE_CONNECT);
+        logDebug("Changed to reconnect scene");
+        setScene(SCENE_BLE_RECONNECT);
     }
     prevBluetoothIsConnected = bluetoothIsConnected;
 

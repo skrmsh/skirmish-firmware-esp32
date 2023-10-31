@@ -66,8 +66,7 @@ void setup() {
 // the audio gain will be set to 0 -> silence
 #ifndef NO_AUDIO
     float audioGain = 0.6;
-    if (digitalRead(PIN_PWR_OFF))
-        audioGain = 0;
+    if (digitalRead(PIN_PWR_OFF)) audioGain = 0;
     audioInit(audioGain);
 
     // Creating audio task and pinning it to core 0
@@ -135,6 +134,14 @@ void loop() {
         hardwarePowerOff();
     }
 
+    // Reset the game if the phaser was not connected for a while
+    if (mnow - bluetoothDriver->lastDisconnectedTime >
+            CONNECTION_LOSS_RESET_TIMEOUT &&
+        !bluetoothDriver->getConnectionState()) {
+        game->reset();
+        userInterface->setScene(SCENE_BLE_CONNECT);
+    }
+
     triggerPressed = hardwareWasTriggerPressed();
     hitpointEvent = hitpointEventTriggered();
 #ifndef NO_HPNOW
@@ -170,7 +177,7 @@ void loop() {
             logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot,
                      hitLocation);
 
-            if (lastReceivedShot != 0) { // Shot really contains data
+            if (lastReceivedShot != 0) {  // Shot really contains data
                 pid = getPIDFromShot(lastReceivedShot);
                 sid = getSIDFromShot(lastReceivedShot);
 
@@ -183,7 +190,8 @@ void loop() {
         }
 #ifndef NO_HPNOW
         if (hpnowGotHitEvent) {
-            com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(), hpnowGotHitSID());
+            com->hpGotHit(hpnowGotHitHPMode(), hpnowGotHitPID(),
+                          hpnowGotHitSID());
             logInfo("Triggered HP_GOT_HIT action");
         }
 #endif
