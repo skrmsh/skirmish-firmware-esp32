@@ -6,21 +6,26 @@ User Interface - Countdown scene
 Copyright (C) 2023 Ole Lange
 */
 
-#include <conf.h>
-#include <inc/audio.h>
-#include <inc/const.h>
-#include <inc/hardware_control.h>
-#include <inc/hitpoint.h>
-#include <inc/log.h>
-#include <inc/scenes/countdown.h>
-#include <inc/time.h>
-#include <theme.h>
+#include "../scenes/countdown.h"
+
+#include <stdio.h>   // included for mocking, maybe required to remove
+#include <stdlib.h>  // included for mocking, maybe required to remove
+#include <string.h>  // included for mocking, maybe required to remove
+
+#include "../../conf.h"
+#include "../../theme.h"
+#include "../audio.h"
+#include "../const.h"
+#include "../hardware_control.h"
+#include "../hitpoint.h"
+#include "../log.h"
+#include "../time.h"
 
 /**
  * Constructor of the scene. Sets the ID
  */
 CountdownScene::CountdownScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
-    this->id = SCENE_JOINED_GAME;
+    this->id = SCENE_COUNTDOWN;
     countdown = (char *)malloc(3 * sizeof(char));
     strcpy(countdown, "  ");
 }
@@ -52,7 +57,7 @@ bool CountdownScene::update() {
 #endif
         hardwareVibrate(150);
 
-        return true; // render if countdown has changed
+        return true;  // render if countdown has changed
     }
 
     // if the countdown is finished change to the game scene
@@ -70,14 +75,9 @@ bool CountdownScene::update() {
  */
 void CountdownScene::render() {
 #ifndef NO_DISPLAY
-    ui->display->setFont(SDT_SUBHEADER_FONT);
-    ui->display->setTextColor(SDT_TEXT_COLOR);
-    ui->display->centerText("START  IN", 50, 1);
-    ui->display->centerText("SECONDS", 280, 1);
-
     ui->display->setFont(SDT_HEADER_FONT);
-    ui->display->setTextColor(SDT_PRIMARY_COLOR);
+    ui->display->setTextColor(SDT_TEXT_COLOR);
 
-    ui->display->centerText(countdown, 185, 3, true, SDT_BG_COLOR);
+    ui->display->centerText(countdown, 200, 3, true, SDT_BG_COLOR);
 #endif
 }

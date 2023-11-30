@@ -6,11 +6,15 @@ Display driver
 Copyright (C) 2023 Ole Lange
 */
 
-#include <conf.h>
-#include <inc/display.h>
-#include <fonts/theNeueBlack18pt.h>
-#include <inc/log.h>
-#include <theme.h>
+#include "display.h"
+
+#include <string.h>  // included for mocking, maybe required to remove
+
+#include "../conf.h"
+#include "../fonts/skvec.h"
+#include "../fonts/theNeueBlack18pt.h"
+#include "../theme.h"
+#include "log.h"
 
 /**
  * Display class constructor
@@ -185,4 +189,85 @@ void SkirmishDisplay::centerText(const char* text, uint16_t y, uint8_t fontSize,
 void SkirmishDisplay::centerText(const char* text, uint16_t y,
                                  uint8_t fontSize) {
     centerText(text, y, fontSize, false, SDT_BG_COLOR);
+}
+
+/**
+ * Renders a skvec graphic from the given pointer.
+ *
+ * @param vec pointer to the graphic
+ * @param x x-axis offset
+ * @param y y-axis offset
+ * @param color color of the graphic
+ * @param mirror (defaults to false) mirror on x-axis
+ */
+void SkirmishDisplay::drawVec(const uint8_t* vec, uint8_t x, uint16_t y,
+                              uint16_t color, bool mirror) {
+    uint16_t correctedColor = gammaCorrection(color);
+
+    uint16_t idx = 0;
+    uint8_t shape = 0;
+    uint16_t y0, y1, y2;
+    uint8_t x0, x1, x2;
+
+    while (1) {
+        shape = vec[idx];
+        idx++;
+
+        // check if shape id is 0xff
+        if (shape == 0xff) break;
+
+        // Get coordinates
+        x0 = vec[idx];
+        y0 = (vec[idx + 1] << 8) | (vec[idx + 2]);
+        x1 = vec[idx + 3];                          // rect: w
+        y1 = (vec[idx + 4] << 8) | (vec[idx + 5]);  // rect: h
+        idx += 6;
+        if ((shape & 0x7f) == TRIANGLE) {
+            x2 = vec[idx];
+            y2 = (vec[idx + 1] << 8) | (vec[idx + 2]);
+            idx += 3;
+        }
+
+        // Do x, y offset
+        x0 += x;
+        y0 += y;
+        if ((shape & 0x7f) != RECT) {
+            x1 += x;
+            y1 += y;
+            x2 += x;
+            y2 += y;
+        }
+
+        // Mirroring
+        if (mirror) {
+            x0 = 240 - x0;
+            x2 = 240 - x2;
+            if ((shape & 0x7f) == RECT) {
+                x0 = x0 - x1;
+            } else {
+                x1 = 240 - x1;
+            }
+        }
+
+        // Draw shape
+        switch ((shape & 0x7f)) {
+            case LINE:
+                this->tft.drawLine(x0, y0, x1, y1, color);
+                break;
+            case RECT:
+                if ((shape & 0x80) == 0)
+                    this->tft.drawRect(x0, y0, x1, y1, correctedColor);
+                else if ((shape & 0x80) == 0x80)
+                    this->tft.fillRect(x0, y0, x1, y1, correctedColor);
+                break;
+            case TRIANGLE:
+                if ((shape & 0x80) == 0)
+                    this->tft.drawTriangle(x0, y0, x1, y1, x2, y2,
+                                           correctedColor);
+                else if ((shape & 0x80) == 0x80)
+                    this->tft.fillTriangle(x0, y0, x1, y1, x2, y2,
+                                           correctedColor);
+                break;
+        }
+    }
 }

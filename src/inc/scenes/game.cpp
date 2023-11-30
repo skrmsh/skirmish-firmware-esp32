@@ -6,19 +6,25 @@ User Interface - Joined Game scene
 Copyright (C) 2023 Ole Lange
 */
 
-#include <conf.h>
-#include <fonts/bitmaps.h>
-#include <inc/const.h>
-#include <inc/hardware_control.h>
-#include <inc/hitpoint.h>
-#include <inc/scenes/game.h>
-#include <theme.h>
+#include "game.h"
+
+#include <stdio.h>   // included for mocking, maybe required to remove
+#include <stdlib.h>  // included for mocking, maybe required to remove
+#include <string.h>  // included for mocking, maybe required to remove
+
+#include "../../conf.h"
+#include "../../fonts/bitmaps.h"
+#include "../../theme.h"
+#include "../const.h"
+#include "../hardware_control.h"
+#include "../hitpoint.h"
+// #include "../mocks.h"  // MOCK: REMOVE
 
 /**
  * Constructor of the scene. Sets the ID
  */
 GameScene::GameScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
-    this->id = SCENE_JOINED_GAME;
+    this->id = SCENE_GAME;
 
     knownPlayerName = (char *)malloc(33 * sizeof(char));
     knownTeamName = (char *)malloc(33 * sizeof(char));
@@ -111,6 +117,16 @@ void GameScene::render() {
     }
 
 #ifndef NO_DISPLAY
+
+    // Drawing player colored bar
+    uint16_t playerColor = ui->display->gammaCorrection(
+        ui->display->color(ui->game->player.color_r, ui->game->player.color_g,
+                           ui->game->player.color_b));
+
+    ui->display->tft.fillRect(35, 27, 170, 13, playerColor);
+    ui->display->tft.fillTriangle(26, 33, 35, 27, 35, 39, playerColor);
+    ui->display->tft.fillTriangle(214, 33, 205, 27, 205, 39, playerColor);
+
     // Drawing game name
     if (strlen(ui->game->gid) < 10)  // Selecting font size based on length
         ui->display->setFont(SDT_HEADER_FONT);
@@ -118,35 +134,35 @@ void GameScene::render() {
         ui->display->setFont(SDT_SUBHEADER_FONT);
 
     ui->display->setTextColor(SDT_PRIMARY_COLOR);
-    ui->display->centerText(ui->game->gid, 55, 1);
+    ui->display->centerText(ui->game->gid, 75, 1);
 
     // Drawing player name
     ui->display->setFont(SDT_SUBHEADER_FONT);
     ui->display->setTextColor(SDT_PRIMARY_COLOR);
-    ui->display->centerText(ui->game->player.name, 80, 1);
-
-    // Drawing team name
-    if (ui->game->team.tid != 0) {  // Team ID 0 -> No Team
-        ui->display->setFont(SDT_SUBHEADER_FONT);
-        ui->display->setTextColor(SDT_PRIMARY_COLOR);
-        ui->display->centerText(ui->game->team.name, 100, 1);
-    }
+    ui->display->centerText(ui->game->player.name, 110, 1);
 
     // Drawing player ranking
     char rankingString[8];
     sprintf(rankingString, "%d/%d", ui->game->player.rank,
             ui->game->playerCount);
-    ui->display->setFont(SDT_HEADER_FONT);
-    ui->display->setTextColor(SDT_PRIMARY_COLOR);
-    ui->display->centerText(rankingString, 160, 1, true, SDT_BG_COLOR);
+    ui->display->setFont(SDT_SUBHEADER_FONT);
+    ui->display->setTextColor(SDT_SECONDARY_COLOR);
+    ui->display->centerText(rankingString, 127, 1, true, SDT_BG_COLOR);
+
+    // Drawing team name
+    if (ui->game->team.tid != 0) {  // Team ID 0 -> No Team
+        ui->display->setFont(SDT_SUBHEADER_FONT);
+        ui->display->setTextColor(SDT_PRIMARY_COLOR);
+        ui->display->centerText(ui->game->team.name, 160, 1);
+    }
 
     // Drawing team ranking
     if (ui->game->team.tid != 0) {  // Team ID 0 -> No Team
         sprintf(rankingString, "%d/%d", ui->game->team.rank,
                 ui->game->teamCount);
         ui->display->setFont(SDT_SUBHEADER_FONT);
-        ui->display->setTextColor(SDT_PRIMARY_COLOR);
-        ui->display->centerText(rankingString, 185, 1, true, SDT_BG_COLOR);
+        ui->display->setTextColor(SDT_SECONDARY_COLOR);
+        ui->display->centerText(rankingString, 177, 1, true, SDT_BG_COLOR);
     }
 
     // Clear line with ammo and points display
@@ -195,25 +211,29 @@ void GameScene::render() {
         }
     }
 
-    // Clearing symbol containers
+    // Clearing symbol area
     ui->display->tft.fillRect(0, 260, 240, 60,
                               ui->display->gammaCorrection(SDT_BG_COLOR));
-
-    // Drawing symbol containers
-    ui->display->tft.drawLine(0, 260, 240, 260,
-                              ui->display->gammaCorrection(SDT_TEXT_COLOR));
-    ui->display->tft.drawLine(59, 260, 59, 320,
-                              ui->display->gammaCorrection(SDT_TEXT_COLOR));
-    ui->display->tft.drawLine(120, 260, 120, 320,
-                              ui->display->gammaCorrection(SDT_TEXT_COLOR));
-    ui->display->tft.drawLine(181, 260, 181, 320,
-                              ui->display->gammaCorrection(SDT_TEXT_COLOR));
 
     // Drawing Phaser Enable Symbol
     ui->display->tft.drawBitmap(
         6, 266, bitmapPhaser, 48, 48,
-        ui->display->gammaCorrection(SDT_PRIMARY_COLOR));
+        ui->display->gammaCorrection(canFire ? SDT_PRIMARY_COLOR
+                                             : SDT_GAME_SYMBOL_DISABLED_COLOR));
+    // Drawing Inviolable Symbol
+    ui->display->tft.drawBitmap(
+        66, 266, bitmapShield, 48, 48,
+        ui->display->gammaCorrection(ui->game->player.isInviolable()
+                                         ? SDT_PRIMARY_COLOR
+                                         : SDT_GAME_SYMBOL_DISABLED_COLOR));
+    // Drawing Ammo Limit Symbol
+    ui->display->tft.drawBitmap(
+        126, 266, bitmapAmmo, 48, 48,
+        ui->display->gammaCorrection(ui->game->player.ammoLimit
+                                         ? SDT_PRIMARY_COLOR
+                                         : SDT_GAME_SYMBOL_DISABLED_COLOR));
 
+    /*
     // Drawling line over it if canFire is false
     if (!canFire) {
         ui->display->tft.drawLine(6, 312, 52, 266, 0xffff);
@@ -223,10 +243,6 @@ void GameScene::render() {
         ui->display->tft.drawLine(8, 314, 54, 268, 0xffff);
     }
 
-    // Drawing Inviolable Symbol
-    ui->display->tft.drawBitmap(
-        66, 266, bitmapShield, 48, 48,
-        ui->display->gammaCorrection(SDT_PRIMARY_COLOR));
     if (!ui->game->player.isInviolable()) {
         ui->display->tft.drawLine(66, 312, 112, 266, 0xffff);
         ui->display->tft.drawLine(66, 313, 113, 266, 0xffff);
@@ -235,10 +251,6 @@ void GameScene::render() {
         ui->display->tft.drawLine(68, 314, 114, 268, 0xffff);
     }
 
-    // Drawing Ammo Limit Symbol
-    ui->display->tft.drawBitmap(
-        126, 266, bitmapAmmo, 48, 48,
-        ui->display->gammaCorrection(SDT_PRIMARY_COLOR));
     if (!ui->game->player.ammoLimit) {
         ui->display->tft.drawLine(126, 312, 172, 266, 0xffff);
         ui->display->tft.drawLine(126, 313, 173, 266, 0xffff);
@@ -246,6 +258,7 @@ void GameScene::render() {
         ui->display->tft.drawLine(127, 314, 174, 267, 0xffff);
         ui->display->tft.drawLine(128, 314, 174, 268, 0xffff);
     }
+    */
 
     // Drawing Additional Symbol field
     // TODO

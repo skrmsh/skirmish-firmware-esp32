@@ -6,8 +6,8 @@ Default theme file
 Copyright (C) 2023 Ole Lange
 */
 
-#include <fonts/theNeueBlack10pt.h>
-#include <fonts/theNeueBlack18pt.h>
+#include "fonts/theNeueBlack10pt.h"
+#include "fonts/theNeueBlack18pt.h"
 
 // Themeing (SDT -> Skirmish Display Theme)
 #define SDT_BG_COLOR 0x2945
@@ -34,3 +34,5 @@ Copyright (C) 2023 Ole Lange
 
 #define SDT_HEALTH_COLOR 0x6743
 #define SDT_HEALTH_BG_COLOR 0x632C
+
+#define SDT_GAME_SYMBOL_DISABLED_COLOR 0x0000

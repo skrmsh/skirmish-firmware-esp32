@@ -8,8 +8,9 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <inc/const.h>
 #include <stdint.h>
+
+#include "inc/const.h"
 
 // Configuration values:
 

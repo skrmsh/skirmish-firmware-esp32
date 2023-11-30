@@ -1,5 +1,5 @@
 #ifndef NO_DISPLAY
-const uint8_t TheNeue_Black10pt7bBitmaps[] PROGMEM = {
+const uint8_t TheNeue_Black10pt7bBitmaps[] = {
     0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xDE, 0x70, 0x3F, 0xFF, 0xFC, 0xE3, 0xF1,
     0xF8, 0xFC, 0x7E, 0x38, 0x07, 0x8E, 0x03, 0xCF, 0x01, 0xE7, 0x87, 0xFF,
     0xF3, 0xFF, 0xF0, 0x79, 0xE0, 0x38, 0xF0, 0x3C, 0x70, 0x1E, 0x78, 0x3F,
@@ -168,7 +168,7 @@ const uint8_t TheNeue_Black10pt7bBitmaps[] PROGMEM = {
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF0, 0xE3, 0xCF, 0x9E, 0x79, 0xE7, 0x9F,
     0x1D, 0xF7, 0x9E, 0x79, 0xEF, 0xBC, 0xE0, 0x71, 0xFF, 0xFF, 0xFF, 0x9E};
 
-const GFXglyph TheNeue_Black10pt7bGlyphs[] PROGMEM = {
+const GFXglyph TheNeue_Black10pt7bGlyphs[] = {
     {0, 1, 1, 4, 0, 0},          // 0x20 ' '
     {1, 5, 14, 7, 1, -13},       // 0x21 '!'
     {10, 9, 5, 11, 1, -13},      // 0x22 '"'
@@ -265,9 +265,9 @@ const GFXglyph TheNeue_Black10pt7bGlyphs[] PROGMEM = {
     {1986, 6, 17, 7, 1, -13},    // 0x7D '}'
     {1999, 10, 4, 12, 1, -7}};   // 0x7E '~'
 
-const GFXfont TheNeue_Black10pt7b PROGMEM = {
-    (uint8_t *)TheNeue_Black10pt7bBitmaps,
-    (GFXglyph *)TheNeue_Black10pt7bGlyphs, 0x20, 0x7E, 24};
+const GFXfont TheNeue_Black10pt7b = {(uint8_t *)TheNeue_Black10pt7bBitmaps,
+                                     (GFXglyph *)TheNeue_Black10pt7bGlyphs,
+                                     0x20, 0x7E, 24};
 
 // Approx. 2676 bytes
 #endif

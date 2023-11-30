@@ -6,17 +6,23 @@ User Interface
 Copyright (C) 2023 Ole Lange
 */
 
-#include <inc/hardware_control.h>
-#include <inc/hitpoint.h>
-#include <inc/log.h>
-#include <inc/scenes/countdown.h>
-#include <inc/scenes/game.h>
-#include <inc/scenes/joined_game.h>
-#include <inc/scenes/scene.h>
-#include <inc/scenes/splash.h>
-#include <inc/time.h>
-#include <inc/ui.h>
-#include <theme.h>
+#include "ui.h"
+
+#include <stdlib.h>  // included for mocking, maybe required to remove
+#include <string.h>  // included for mocking, maybe required to remove
+
+#include "../fonts/skvec.h"
+#include "../theme.h"
+#include "hardware_control.h"
+#include "hitpoint.h"
+#include "log.h"
+// #include "mocks.h"  // MOCK: REMOVE
+#include "scenes/countdown.h"
+#include "scenes/game.h"
+#include "scenes/joined_game.h"
+#include "scenes/scene.h"
+#include "scenes/splash.h"
+#include "time.h"
 
 /**
  * User Interface Class Constructor.
@@ -70,12 +76,8 @@ void SkirmishUI::setScene(uint8_t scene) {
 
     currentScene->onSet(scene);
 
-#ifndef NO_DISPLAY
-    display->clear();
-#endif
-
     setRenderingRequired();
-
+    clearRequired = true;
     logDebug("Changed to scene %d", scene);
 }
 
@@ -163,10 +165,24 @@ void SkirmishUI::render() {
 #endif
     }
 
+    currentScene->render();
+
 #ifndef NO_DISPLAY
+    // Draw border (type game on game scene, secondary color on ble_reconnect
+    // scene)
+    if (currentScene->getID() == SCENE_GAME) {
+        border(BORDER_TYPE_GAME,
+               display->color(game->player.color_r, game->player.color_g,
+                              game->player.color_b));
+    } else {
+        border(BORDER_TYPE_DEFAULT,
+               (currentScene->getID() == SCENE_BLE_RECONNECT)
+                   ? SDT_SECONDARY_COLOR
+                   : SDT_PRIMARY_COLOR);
+    }
     renderStatusOverlay();
 #endif
-    currentScene->render();
+
 #ifndef NO_DISPLAY
     if (msgBoxVisible) {
         renderMsgBox();
@@ -182,11 +198,10 @@ void SkirmishUI::renderStatusOverlay() {
     // Draw the battery status
     float batteryPercent = hardwareBatteryPercent();
     uint8_t batRectWidth = batteryPercent * 18;
-    // Outline + "Battery Contact"
-    display->tft.drawRect(210, 3, 20, 10,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
-    display->tft.drawRect(230, 5, 2, 6,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
+
+    // Unfilled battery symbol
+    display->drawVec(skvec_battery, 210, 3, SDT_BG_COLOR);
+
     // Fill depending on charge level
     uint16_t batteryColor;
     if (batteryPercent > 0.7)
@@ -202,34 +217,13 @@ void SkirmishUI::renderStatusOverlay() {
 
     // Draw the device name
     display->setFont(SDT_TEXT_FONT);
-    display->setTextColor(SDT_TEXT_COLOR);
+    display->setTextColor(SDT_BG_COLOR);
     display->centerText(bluetooth->getName(), 5, 1);
 
-    // Drawing the bluetooth symbol
-    uint8_t btx = 10;
-    uint8_t bty = 1;
-    display->tft.drawLine(btx, bty, btx, bty + 12,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
-    display->tft.drawLine(btx - 3, bty + 3, btx + 3, bty + 8,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
-    display->tft.drawLine(btx + 3, bty + 3, btx - 3, bty + 8,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
-    display->tft.drawLine(btx, bty, btx + 3, bty + 3,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
-    display->tft.drawLine(btx, bty + 12, btx + 3, bty + 9,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
-
-    // Draw a cross over it if not connected
-    if (!bluetooth->getConnectionState()) {
-        display->tft.drawLine(btx - 4, bty + 13, btx + 4, 0,
-                              display->gammaCorrection(SDT_PRIMARY_COLOR));
-        display->tft.drawLine(btx - 4, bty - 1, btx + 4, 14,
-                              display->gammaCorrection(SDT_PRIMARY_COLOR));
+    // Drawing the bluetooth symbol (if connected)
+    if (bluetooth->getConnectionState()) {
+        display->drawVec(skvec_bluetooth, 7, 1, SDT_BG_COLOR);
     }
-
-    // Draw the Horizontal Rule
-    display->tft.drawLine(0, 16, 240, 16,
-                          display->gammaCorrection(SDT_TEXT_COLOR));
 }
 
 void SkirmishUI::renderMsgBox() {
@@ -250,5 +244,23 @@ void SkirmishUI::renderMsgBox() {
     display->setFont(SDT_SUBHEADER_FONT);
     display->setTextColor(SDT_TEXT_COLOR);
     display->centerText(msgBoxText, 170, 1);
+}
+
+void SkirmishUI::border(uint8_t type, uint16_t color) {
+    display->tft.fillRect(0, 0, 240, 16, display->gammaCorrection(color));
+    display->drawVec(skvec_genericBorder, 0, 16, color);
+    if (type == BORDER_TYPE_DEFAULT) {
+        display->drawVec(skvec_borderTypeDefault, 0, 16, color);
+
+    } else if (BORDER_TYPE_GAME) {
+        display->drawVec(skvec_borderTypeGame, 0, 16, color);
+        // Drawing dotted bottom line
+        int16_t x = -5;
+        for (uint8_t i = 0; i < 11; i++) {
+            display->tft.fillRect(x, 258, 20, 3,
+                                  display->gammaCorrection(color));
+            x += 23;
+        }
+    }
 }
 #endif

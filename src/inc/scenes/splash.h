@@ -8,9 +8,11 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <inc/scenes/scene.h>
-#include <qrcode.h>
 #include <stdint.h>
+
+// #include "../qrcode.h"  // MOCK: REMOVE
+#include "qrcode.h"  // MOCK: ADD
+#include "scene.h"
 
 class SplashscreenScene : public SkirmishUIScene {
    private:
