@@ -8,7 +8,7 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <inc/ui.h>
+#include "../ui.h"
 
 /**
  * Classes inherited from this class are drawing the
@@ -29,3 +29,4 @@ class SkirmishUIScene {
     virtual bool update();
     virtual void render();
 };
+

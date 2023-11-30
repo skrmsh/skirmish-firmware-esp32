@@ -8,8 +8,7 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <conf.h>
-
+#include "../conf.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
 
@@ -43,4 +42,8 @@ class SkirmishDisplay {
     void centerText(const char* text, uint16_t y, uint8_t fontSize,
                     bool clearLine, uint16_t bgColor);
     void centerText(const char* text, uint16_t y, uint8_t fontSize);
+
+    // Vector Functions
+    void drawVec(const uint8_t* vec, uint8_t x, uint16_t y, uint16_t color,
+                 bool mirror = false);
 };

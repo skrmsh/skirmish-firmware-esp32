@@ -6,7 +6,7 @@ Scene base class
 Copyright (C) 2023 Ole Lange
 */
 
-#include <inc/scenes/scene.h>
+#include "scene.h"
 
 /**
  * Constructor

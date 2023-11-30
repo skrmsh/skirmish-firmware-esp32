@@ -8,7 +8,7 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <inc/scenes/scene.h>
+#include "scene.h"
 
 class CountdownScene : public SkirmishUIScene {
    private:

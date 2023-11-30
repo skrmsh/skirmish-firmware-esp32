@@ -8,10 +8,11 @@ Copyright (C) 2023 Ole Lange
 
 #pragma once
 
-#include <inc/bluetooth.h>
-#include <inc/display.h>
-#include <inc/game.h>
 #include <stdint.h>
+
+#include "bluetooth.h"
+#include "display.h"
+#include "game.h"
 
 /**
  * Forward definitions of scene classes
@@ -21,6 +22,9 @@ class SplashscreenScene;
 class JoinedGameScene;
 class CountdownScene;
 class GameScene;
+
+#define BORDER_TYPE_DEFAULT 0
+#define BORDER_TYPE_GAME 1
 
 /**
  * This class renders the user interface on
@@ -59,6 +63,8 @@ class SkirmishUI {
 
     void setRenderingRequired();
     void setScene(uint8_t scene);
+
+    void border(uint8_t type, uint16_t color);
 
     void msgBox(char *heading, char *text, uint32_t timeout);
     bool msgBoxVisible = false;

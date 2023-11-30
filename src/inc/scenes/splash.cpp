@@ -6,12 +6,16 @@ User Interface - Splashscreen scene
 Copyright (C) 2023 Ole Lange
 */
 
-#include <conf.h>
-#include <inc/const.h>
-#include <inc/hitpoint.h>
-#include <inc/scenes/splash.h>
-#include <qrcode.h>
-#include <theme.h>
+#include "splash.h"
+
+#include <stdlib.h>  // included for mocking, maybe required to remove
+#include <string.h>  // included for mocking, maybe required to remove
+
+#include "../../conf.h"
+#include "../../theme.h"
+#include "../const.h"
+#include "../hitpoint.h"
+// #include "../qrcode.h"  // MOCK: REMOVE
 
 /**
  * Constructor of the scene. Sets the ID
@@ -73,15 +77,16 @@ void SplashscreenScene::render() {
 #ifndef NO_DISPLAY
     ui->display->setFont(SDT_HEADER_FONT);
 
-    uint8_t base_y = 140;
+    uint8_t base_y = 170;
     if (id == SCENE_BLE_CONNECT) base_y = 80;
 
-    ui->display->setTextColor(SDT_PRIMARY_COLOR);
+    ui->display->setTextColor((id == SCENE_BLE_RECONNECT) ? SDT_SECONDARY_COLOR
+                                                          : SDT_PRIMARY_COLOR);
     ui->display->centerText("SKIRMISH", base_y, SDT_HEADER_FONT_SIZE);
 
     ui->display->setFont(SDT_TEXT_FONT);
     ui->display->setTextColor(SDT_TEXT_COLOR);
-    ui->display->centerText(splashText, base_y + 20, 1);
+    ui->display->centerText(splashText, base_y + 5, 1);
 
     // Render a qr code to the connect scene
     if (id == SCENE_BLE_CONNECT) {
@@ -90,11 +95,11 @@ void SplashscreenScene::render() {
             for (uint8_t x = 0; x < nameQR.size; x++) {
                 if (qrcode_getModule(&nameQR, x, y)) {
                     ui->display->tft.fillRect(
-                        pos_x + (x * 5), base_y + 75 + (y * 5), 5, 5,
+                        pos_x + (x * 5), base_y + 55 + (y * 5), 5, 5,
                         ui->display->gammaCorrection(SDT_TEXT_COLOR));
                 } else {
                     ui->display->tft.fillRect(
-                        pos_x + (x * 5), base_y + 75 + (y * 5), 5, 5,
+                        pos_x + (x * 5), base_y + 55 + (y * 5), 5, 5,
                         ui->display->gammaCorrection(SDT_BG_COLOR));
                 }
             }
