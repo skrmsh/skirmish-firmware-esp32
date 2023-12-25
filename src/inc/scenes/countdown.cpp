@@ -61,7 +61,7 @@ bool CountdownScene::update() {
     }
 
     // if the countdown is finished change to the game scene
-    if (secLeft == 0) {
+    if (secLeft <= 0) {
         hardwareVibrate(300);
         ui->setScene(SCENE_GAME);
         return false;
