@@ -59,7 +59,7 @@ void SplashscreenScene::onSet(uint8_t id) {
 
         // turn off leds
         hitpointSelectAnimation(HP_ANIM_SOLID);
-        hitpointSetColor(0, 0, 0);
+        hitpointSetColor(this->ui->stbR, this->ui->stbG, this->ui->stbB);
     } else {
         strcpy(splashText, "<INVALID SCENE>");
     }
@@ -74,6 +74,10 @@ bool SplashscreenScene::update() { return false; }
  * Renders the scene
  */
 void SplashscreenScene::render() {
+    if (this->id == SCENE_NO_GAME) {
+        hitpointSelectAnimation(HP_ANIM_SOLID);
+        hitpointSetColor(this->ui->stbR, this->ui->stbG, this->ui->stbB);
+    }
 #ifndef NO_DISPLAY
     ui->display->setFont(SDT_HEADER_FONT);
 

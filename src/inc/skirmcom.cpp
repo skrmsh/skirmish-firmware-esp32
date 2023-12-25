@@ -145,6 +145,14 @@ void SkirmCom::onReceive(DynamicJsonDocument *data) {
 #endif
     }
 
+    /*
+    Non-Action values
+    */
+    if (root.containsKey("stb_r") && root.containsKey("stb_g") &&
+        root.containsKey("stb_b")) {  // standby color
+        this->ui->setStandbyColor(root["stb_r"], root["stb_g"], root["stb_b"]);
+    }
+
     if (debugPrintJson) {
         logDebug("Received JSON Data:");
         serializeJson(root, Serial);
