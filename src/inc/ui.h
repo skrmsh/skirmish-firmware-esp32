@@ -56,6 +56,8 @@ class SkirmishUI {
     Game *game;
     SkirmishBluetooth *bluetooth;
 
+    uint8_t stbR, stbG, stbB;
+
     bool clearRequired = false;
 
     SkirmishUI(SkirmishDisplay *display, SkirmishBluetooth *bluetooth,
@@ -63,6 +65,8 @@ class SkirmishUI {
 
     void setRenderingRequired();
     void setScene(uint8_t scene);
+
+    void setStandbyColor(uint8_t r, uint8_t g, uint8_t b);
 
     void border(uint8_t type, uint16_t color);
 

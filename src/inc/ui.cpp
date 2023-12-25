@@ -37,6 +37,10 @@ SkirmishUI::SkirmishUI(SkirmishDisplay *display, SkirmishBluetooth *bluetooth,
     this->game = game;
     this->bluetooth = bluetooth;
 
+    this->stbR = 0;
+    this->stbG = 0;
+    this->stbB = 0;
+
     splashscreenScene = new SplashscreenScene(this);
     joinedGameScene = new JoinedGameScene(this);
     countdownScene = new CountdownScene(this);
@@ -264,3 +268,10 @@ void SkirmishUI::border(uint8_t type, uint16_t color) {
     }
 }
 #endif
+
+void SkirmishUI::setStandbyColor(uint8_t r, uint8_t g, uint8_t b) {
+    this->stbR = r;
+    this->stbG = g;
+    this->stbB = b;
+    this->setRenderingRequired();
+}
