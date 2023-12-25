@@ -253,6 +253,7 @@ void SkirmCom::hwStatus(float battery) {
     JsonArray actions = jsonOutDocument->createNestedArray("a");
     actions.add(ACTION_HW_STATUS);
     jsonOutDocument->operator[]("battery") = battery;
+    jsonOutDocument->operator[]("d_id") = this->bleDriver->getName();
 
     // Sending data
     bleDriver->writeJsonData(jsonOutDocument);
