@@ -24,7 +24,11 @@ JoinedGameScene::JoinedGameScene(SkirmishUI *ui) : SkirmishUIScene(ui) {
 /**
  * Is called when the scene is set
  */
-void JoinedGameScene::onSet(uint8_t id) {}
+void JoinedGameScene::onSet(uint8_t id) {
+    // Turn off hitpoint colors
+    hitpointSelectAnimation(HP_ANIM_SOLID);
+    hitpointSetColor(0, 0, 0);
+}
 
 /**
  * Updates the splashscreen scene
