@@ -76,12 +76,31 @@ void infraredInit() {
 }
 
 /*
+Calculate the CRC8 sum from a 24-Bit integer
+*/
+uint8_t calculateCRC8(uint32_t data) {
+    uint8_t crc = 0xff;
+    size_t i, j;
+    for (i = 0; i < 3; i++) {
+        crc ^= ((data >> (i * 8)) & 0xff);
+        for (j = 0; j < 8; j++) {
+            if ((crc & 0x80) != 0) {
+                crc = (uint8_t)((crc << 1) ^ 0x31);
+            } else {
+                crc <<= 1;
+            }
+        }
+    }
+    return crc;
+}
+
+/*
 Transmits the given pid + sid + a checksum
 via the infrared led using the nec protocol
 */
 void infraredTransmitShot(uint8_t pid, uint32_t sid) {
     uint32_t irpack = (pid << 16) | (sid & 0xffff);
-    uint8_t checksum = irpack % 0xff;
+    uint8_t checksum = calculateCRC8(irpack);
     irpack = (checksum << 24) | irpack;
 
     logDebug("Transmitting Shot:");

@@ -17,6 +17,9 @@ Copyright (C) 2023 Ole Lange
 // Defining the module type, using the same schema as the hitpoint mcfg
 #define MODULE_TYPE MODULE_PHASER
 
+// Enable to shoot debug packages
+// #define PHASER_DEBUG_SHOOTING
+
 // Logging
 #define LOG_SERIAL_SPEED 115200
 // (Levels are 0->5 Debug, Info, Warn, Error, Fatal, Off)
@@ -102,6 +105,7 @@ Copyright (C) 2023 Ole Lange
 #define UI_REFRESH_INTERVAL 15000
 
 // Communication
+#define HP_TIMESYNC_SEND_INTERVAL 10000
 #define HW_STATUS_SEND_INTERVAL 15000
 
 #define NO_HPNOW  // Disable hpnow with this flag.. (requires much energy i
