@@ -12,3 +12,5 @@ Copyright (C) 2023 Ole Lange
 
 void infraredInit();
 void infraredTransmitShot(uint8_t playerID, uint32_t shotID);
+
+uint8_t calculateCRC8(uint32_t data);

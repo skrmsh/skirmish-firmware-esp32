@@ -55,6 +55,7 @@ void setup() {
 
     hardwareInit();
     hitpointInit();
+    hitpointSyncTime();
 #ifndef NO_PHASER
     infraredInit();
 #endif
@@ -104,6 +105,8 @@ void setup() {
 
 uint32_t hwStatusLastSend = 0;
 
+uint32_t hitpointTimesyncLastSend = 0;
+
 uint32_t lastFiredShot = 0;
 uint32_t mnow;
 
@@ -121,6 +124,11 @@ void loop() {
     hardwareLoop();
 
     mnow = millis();
+
+    if (mnow - hitpointTimesyncLastSend > HP_TIMESYNC_SEND_INTERVAL) {
+        hitpointTimesyncLastSend = mnow;
+        hitpointSyncTime();
+    }
 
     if (mnow - hwStatusLastSend > HW_STATUS_SEND_INTERVAL) {
         com->hwStatus(hardwareBatteryPercent());
@@ -148,6 +156,26 @@ void loop() {
     hpnowGotHitEvent = hpnowGotHit();
 #endif
 
+#ifndef NO_PHASER
+#ifdef PHASER_DEBUG_SHOOTING
+    if (triggerPressed && mnow - lastFiredShot > 100) {
+        lastFiredShot = mnow;
+        infraredTransmitShot(0xde, 0xadbe);
+    }
+#endif
+#endif
+
+#ifdef NO_PHASER
+#ifdef PHASER_DEBUG_SHOOTING
+    if (hitpointEvent) {
+        lastReceivedShot = hitpointReadShotRaw(&hitLocation);
+        hitLocation = hitLocation ^ 0x50;
+        logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot,
+                 hitLocation);
+    }
+#endif
+#endif
+
     if (game->isRunning()) {
 #ifndef NO_PHASER
         if (triggerPressed && game->player.canFire() &&
@@ -171,13 +199,14 @@ void loop() {
         }
 #endif
 
-        if (hitpointEvent && !game->player.isInviolable()) {
+        if (hitpointEvent) {
             lastReceivedShot = hitpointReadShotRaw(&hitLocation);
             hitLocation = hitLocation ^ 0x50;
             logDebug("Received Hitpoint Data: %08x @ %d", lastReceivedShot,
                      hitLocation);
 
-            if (lastReceivedShot != 0) {  // Shot really contains data
+            if (lastReceivedShot != 0 &&
+                !game->player.isInviolable()) {  // Shot really contains data
                 pid = getPIDFromShot(lastReceivedShot);
                 sid = getSIDFromShot(lastReceivedShot);
 
